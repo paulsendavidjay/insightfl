@@ -5,4 +5,12 @@ PyMySQL==0.6.2
 Werkzeug==0.9.4
 gunicorn==18.0
 itsdangerous==0.23
+jdcal==1.0
+numpy==1.8.1
+openpyxl==2.0.3
+pandas==0.14.0
+python-dateutil==2.2
+pytz==2014.4
+scipy==0.14.0
+six==1.7.2
 wsgiref==0.1.2

@@ -1,8 +1,9 @@
 from flask import render_template, request, g
 from app import app, host, port, user, passwd, db
 from app.helpers.database import con_db
-from app.helpers.app_funcs import first_n_main, first_n_drugs_assoc_indic, first_n_effects
+from app.helpers.app_funcs import first_n_drugs_assoc_indic, first_n_effects, get_side_effect_probabilities
 import pandas as pd
+import numpy as np
 
 # To create a database connection, add the following
 # within your view functions:
@@ -40,6 +41,7 @@ def RxFx():
 			indication=""
 			slider_dict = {}
 			n_side_effects = 5
+			recommendation = ""
 		elif request.method=='POST':
 			# handle processing information
 			indication = request.form['indication']
@@ -50,17 +52,30 @@ def RxFx():
 			slider_names = first_n_effects(n, indication, conn)
 			
 			slider_dict={} # create empty dictionary for slider info
+			pref_table=[]
 			# THIS IS JUST FOR KEEPING THE SAME VALUES
 			for key in slider_names:
 				try:
 					slider_dict[key] = request.form[key]
+					pref_table.append(int(request.form[key]))
 				except:
-					slider_dict[key] =1
-		
-		message = len(slider_dict)
+					slider_dict[key] = 1
+					pref_table.append(1)
+			
+			prob_df = get_side_effect_probabilities(tuple(slider_names), indication, conn)
+			prob_table = pd.pivot_table(prob_df, 'effect_proportion', rows='side_effect', cols='medicinalproduct')
+			prob_table = prob_table.fillna(0)
+			#return str(pref_table)
+			dot_product = np.dot(pref_table, prob_table)
+			medicinalproducts = list(prob_table.columns.values)
+			score_df = pd.DataFrame(dot_product, index=medicinalproducts, columns=['score'])
+			score_df=score_df.sort_index(by=['score'])
+			recommendation = score_df.iloc[0].name
+			
 		return render_template('RxFx.html', 
 			indication=indication, 
-			slider_dict=slider_dict)
+			slider_dict=slider_dict,
+			recommendation=recommendation)
 
 @app.route('/slides')
 def about():
