@@ -17,25 +17,26 @@
 	  	<option value="contraception" {% if indication == 'contraception' %} selected {% endif %}> Birth Control </option>
 	  	<option value="depression" {% if indication == 'depression' %} selected {% endif %}> Depression </option>
 	  </select>
+      
       <br><br>Number of Side Effects:<br>
 	  <select name="n_side_effects">
-	  	{% for i in range(5,11) %}
-	  	<option value={{i}} > {{ i }} </option>
+	  	{% for i in range(5,16) %}
+	  	<option value={{i}} {% if i == n_sliders %} selected {% endif %} > {{ i }} </option>
 	  	{% endfor %}
 	  </select>
       <br><input type=submit value=Search>
     </dl>
 
-  {% for key, value in slider_dict.iteritems() %}
-  	{{ key }}
-  	<input type="range" name={{ key }} min="1" max="100" value={{ value }}>
+  {% for i in range(0, n_sliders) %}
+  	{{ slider_names[i] }}
+  	<input type="range" name={{ slider_names[i] }} min="1" max="100" value={{ pref_list[i] }}>
   	<br>
   {% endfor %}
 
   </form>
 	<br><br>You entered:<br>
-	{{ indication }}<br>
-    {{ recommendation }}
+	<h2>{{ indication }}<h2>
+    <h1>{{ recommendation }}</h1>
     </div>
   </div>
 </div>

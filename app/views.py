@@ -48,33 +48,31 @@ def RxFx():
 			
 			# ENTER ALGORITHM FUNCTION HERE
 			n=request.form['n_side_effects']
-			#return str(int(n).__class__.__name__)
 			slider_names = first_n_effects(n, indication, conn)
 			
-			slider_dict={} # create empty dictionary for slider info
-			pref_table=[]
+			pref_list=[]
 			# THIS IS JUST FOR KEEPING THE SAME VALUES
-			for key in slider_names:
+			for i in slider_names:
 				try:
-					slider_dict[key] = request.form[key]
-					pref_table.append(int(request.form[key]))
+					pref_list.append(int(request.form[i]))
 				except:
-					slider_dict[key] = 1
-					pref_table.append(1)
+					pref_list.append(1)
 			
 			prob_df = get_side_effect_probabilities(tuple(slider_names), indication, conn)
 			prob_table = pd.pivot_table(prob_df, 'effect_proportion', rows='side_effect', cols='medicinalproduct')
 			prob_table = prob_table.fillna(0)
-			#return str(pref_table)
-			dot_product = np.dot(pref_table, prob_table)
+			
+			dot_product = np.dot(pref_list, prob_table)
 			medicinalproducts = list(prob_table.columns.values)
 			score_df = pd.DataFrame(dot_product, index=medicinalproducts, columns=['score'])
 			score_df=score_df.sort_index(by=['score'])
 			recommendation = score_df.iloc[0].name
 			
 		return render_template('RxFx.html', 
-			indication=indication, 
-			slider_dict=slider_dict,
+			indication=indication,
+			slider_names=slider_names,
+			n_sliders=len(slider_names), 
+			pref_list=pref_list,
 			recommendation=recommendation)
 
 @app.route('/slides')
