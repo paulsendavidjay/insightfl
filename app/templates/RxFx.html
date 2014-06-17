@@ -7,7 +7,7 @@
         <h1>RxFx</h1>
         <p class="lead">
           Prescription Drug Side Effects<br>
-          Get recommended Rx based on side effect tolerances
+          Get recommended Rx based on personalized tolerance/intolerance of side effects
         </p>
   <form method=post action="{{ url_for('RxFx') }}" >
 
@@ -20,6 +20,7 @@
       
       <br><br>Number of Side Effects:<br>
 	  <select name="n_side_effects">
+	  	<!-- THIS SETS THE RANGE OF VALUES FOR THE NUMBER OF SIDE EFFECTS TO USE -->
 	  	{% for i in range(5,16) %}
 	  	<option value={{i}} {% if i == n_sliders %} selected {% endif %} > {{ i }} </option>
 	  	{% endfor %}
@@ -27,19 +28,86 @@
       <br><input type=submit value=Search>
     </dl>
 
+<!-- 
   {% for i in range(0, n_sliders) %}
   	{{ slider_names[i] }}
   	<input type="range" name={{ slider_names[i] }} min="1" max="100" value={{ pref_list[i] }}>
   	<br>
   {% endfor %}
+ -->
+ 
 
+	{% for i in range(0, n_sliders) %}
+
+	
+<div class=.container-fluid >
+
+	<div class="row">
+
+		<div class="col-xs-4 col-md-4">{{ slider_names[i] }}
+			<br>			
+			<div class="radio-inline">
+				<label>
+					<input type="radio" name={{ slider_names[i] }} id="optionsRadios1" value=1 
+					{% if pref_list[i] == 1 %} checked {% endif %} >Okay
+			  </label>
+			</div>
+			<div class="radio-inline">
+				<label>
+					<input type="radio" name={{ slider_names[i] }} id="optionsRadios2" value=2
+					{% if pref_list[i] == 2 %} checked {% endif %} >Dislike
+				</label>
+			</div>
+			<div class="radio-inline">
+				<label>
+					<input type="radio" name={{ slider_names[i] }} id="optionsRadios3" value=3
+					{% if pref_list[i] == 3 %} checked {% endif %} >Hate
+				</label>
+			</div>
+			<br>
+		</div>
+		
+<!-- 
+
+		<div class="col-xs-4 col-md-4">{{ slider_names[(i*1+1)] }}
+			<br>			
+			<div class="radio-inline">
+				<label>
+					<input type="radio" name={{ slider_names[(i*1+1)] }} id="optionsRadios1" value="1" checked>Okay
+			  </label>
+			</div>
+			<div class="radio-inline">
+				<label>
+					<input type="radio" name={{ slider_names[(i*1+1)] }} id="optionsRadios2" value="2">Dislike
+				</label>
+			</div>
+			<div class="radio-inline">
+				<label>
+					<input type="radio" name={{ slider_names[(i*1+1)] }} id="optionsRadios2" value="3">Hate
+				</label>
+			</div>
+			<br>
+		</div>
+ -->
+
+		
+		<!~~ Add the extra clearfix for only the required viewport ~~>
+		<div class="clearfix visible-xs"></div>
+	</div>
+ 
+	
+
+   {% endfor %}	
+
+
+ 
   </form>
-	<br><br>You entered:<br>
-	<h2>{{ indication }}<h2>
     <h1>{{ recommendation }}</h1>
+	<h2>{{ indication }}</h2>
     </div>
   </div>
 </div>
+
 
 
 {% endblock %}

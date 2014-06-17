@@ -13,7 +13,7 @@ def get_db():
 	'''Open new connection to db'''
 	if not hasattr(g, 'mysql_db'):
 		g.mysql_db = con_db(host='127.0.0.1',
-			port=3306, user='root', db='RxFx', passwd='')
+			port=3306, user='root', db='RxFx_indic_birCntl_depr', passwd='')
 	return g.mysql_db
 
 @app.teardown_appcontext
@@ -41,6 +41,8 @@ def RxFx():
 			indication=""
 			slider_dict = {}
 			n_side_effects = 5
+			slider_names=[]
+			pref_list=[]
 			recommendation = ""
 		elif request.method=='POST':
 			# handle processing information
@@ -57,6 +59,7 @@ def RxFx():
 					pref_list.append(int(request.form[i]))
 				except:
 					pref_list.append(1)
+			
 			
 			prob_df = get_side_effect_probabilities(tuple(slider_names), indication, conn)
 			prob_table = pd.pivot_table(prob_df, 'effect_proportion', rows='side_effect', cols='medicinalproduct')
