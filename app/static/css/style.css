@@ -4,7 +4,16 @@
 -------------------------------------------------- */
 body {
 	overflow-y: scroll;
+	padding-top: 70px;
 }
+
+
+.col-centered{
+float: none;
+margin: 0 auto;
+}
+
+
 
 /* 
 div.slider-bars{

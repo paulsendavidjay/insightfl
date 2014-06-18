@@ -1,9 +1,11 @@
-from flask import render_template, request, g
+from flask import render_template, request, g, Flask, make_response
 from app import app, host, port, user, passwd, db
 from app.helpers.database import con_db
-from app.helpers.app_funcs import first_n_drugs_assoc_indic, first_n_effects, get_side_effect_probabilities
+from app.helpers.app_funcs import first_n_drugs_assoc_indic, first_n_effects, get_side_effect_probabilities, plot_single_effect
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
+import os
 
 # To create a database connection, add the following
 # within your view functions:
@@ -41,27 +43,28 @@ def RxFx():
 			indication=""
 			slider_dict = {}
 			n_side_effects = 5
-			slider_names=[]
-			pref_list=[]
+			side_effect_names=[]
+			pref_list=n_side_effects*[0]
 			recommendation = ""
+			alternates = ""
 		elif request.method=='POST':
 			# handle processing information
 			indication = request.form['indication']
 			
 			# ENTER ALGORITHM FUNCTION HERE
 			n=request.form['n_side_effects']
-			slider_names = first_n_effects(n, indication, conn)
+			side_effect_names = first_n_effects(n, indication, conn)
 			
 			pref_list=[]
 			# THIS IS JUST FOR KEEPING THE SAME VALUES
-			for i in slider_names:
+			for i in side_effect_names:
 				try:
 					pref_list.append(int(request.form[i]))
 				except:
-					pref_list.append(1)
+					pref_list.append(0)
 			
 			
-			prob_df = get_side_effect_probabilities(tuple(slider_names), indication, conn)
+			prob_df = get_side_effect_probabilities(tuple(side_effect_names), indication, conn)
 			prob_table = pd.pivot_table(prob_df, 'effect_proportion', rows='side_effect', cols='medicinalproduct')
 			prob_table = prob_table.fillna(0)
 			
@@ -70,13 +73,27 @@ def RxFx():
 			score_df = pd.DataFrame(dot_product, index=medicinalproducts, columns=['score'])
 			score_df=score_df.sort_index(by=['score'])
 			recommendation = score_df.iloc[0].name
+			alternates = score_df.index[1:4]
+			
+			
+			plot_single_effect(prob_table.iloc[:,0])
+			
 			
 		return render_template('RxFx.html', 
 			indication=indication,
-			slider_names=slider_names,
-			n_sliders=len(slider_names), 
+			side_effect_names=side_effect_names,
+			n_sliders=len(side_effect_names), 
 			pref_list=pref_list,
-			recommendation=recommendation)
+			recommendation=recommendation,
+			alternates=alternates)
+
+
+@app.route('/drug_comparisons')
+def drug_comparisons():
+		# Renders slides.html.
+		return render_template('drug_comparisons.html')
+
+
 
 @app.route('/slides')
 def about():

@@ -70,7 +70,15 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="{{ url_for('static', filename='vendor/jquery/dist/jquery.min.js') }}"></script>
     <script src="{{ url_for('static', filename='vendor/bootstrap/dist/js/bootstrap.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='vendor/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+	<script>
+	$(function (){
+	$('[data-toggle="modal"]')
+	.popover({trigger: 'click', html: 'true', placement: "bottom"})
+	.click(function(e) {e.preventDefault();});
+	});
+	</script>
+
+
 
     <!-- Page specific script files -->
     {% block scripts %}{% endblock %}

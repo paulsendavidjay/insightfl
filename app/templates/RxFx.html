@@ -5,109 +5,141 @@
     <div class="container">
       <div class="starter-template">
         <h1>RxFx</h1>
-        <p class="lead">
-          Prescription Drug Side Effects<br>
-          Get recommended Rx based on personalized tolerance/intolerance of side effects
-        </p>
+        <p class="lead"> Prescription Drug Side Effects </p>
+        <p>Get recommended Rx based on personalized tolerance/intolerance of side effects</p>
+
   <form method=post action="{{ url_for('RxFx') }}" >
 
-    <dl>
-      <dt>Indication:<br>
-	  <select name="indication">
-	  	<option value="contraception" {% if indication == 'contraception' %} selected {% endif %}> Birth Control </option>
-	  	<option value="depression" {% if indication == 'depression' %} selected {% endif %}> Depression </option>
-	  </select>
+	<div class="row">
+		<div class="col-xs-4">
+		<dl>
+		<dt><p>Indication:</p></dt>
+		<select name="indication">
+			<option value="contraception" {% if indication == 'contraception' %} selected {% endif %}> Birth Control </option>
+			<option value="depression" {% if indication == 'depression' %} selected {% endif %}> Depression </option>
+		</select>
+		</dl>
+		
+		<dl>
+			<dt><p>Number of Side Effects:</p></dt>
+			<select name="n_side_effects">
+				<!-- THIS SETS THE RANGE OF VALUES FOR THE NUMBER OF SIDE EFFECTS TO USE -->
+				{% for i in range(5,16) %}
+					<option value={{i}} {% if i == n_sliders %} selected {% endif %} > {{ i }} </option>
+				{% endfor %}
+			</select>
+			<input type=submit value=Search>
+		</dl>
+		</div>
+	
+		<div class="col-xs-8">
+
+			<h3>Recommend:<sp>
+				
+				{% if not recommendation == "" %}
+				<button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+				  {{ recommendation }}
+				</button>
+				{% endif %}
+			</h3>
+			
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">{{ recommendation }}</h4>
+      </div>
+      <div class="modal-body">
+		<div class=container >
+			<div class="row">
+				<div class="col-md-3">
+				<img src="static/images/plot_single_effect.png" alt="drug_side_effects" height="400">
+				</div>
+			</div>
+		</div>
+      </div>
       
-      <br><br>Number of Side Effects:<br>
-	  <select name="n_side_effects">
-	  	<!-- THIS SETS THE RANGE OF VALUES FOR THE NUMBER OF SIDE EFFECTS TO USE -->
-	  	{% for i in range(5,16) %}
-	  	<option value={{i}} {% if i == n_sliders %} selected {% endif %} > {{ i }} </option>
-	  	{% endfor %}
-	  </select>
-      <br><input type=submit value=Search>
-    </dl>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>			
+<!-- End Modal -->
+			
+			
+			<h4>
+			Close alternatives:<sp>
+			{% for i in range(0, (alternates|length)) %}
+				{{ alternates[i] }}{% if i < (alternates|length)-1 %},<sp>{% endif %}
+			{% endfor %}
+			</h4>
+		</div>
+
+	</div>      
+
+	<!~~ Add the extra clearfix for only the required viewport ~~>
+	<div class="clearfix visible-xs">
+	</div>
+
+	<div class="row">
+		<div class="col-xs-4">
+		</div>
+    </div>
+
 
 <!-- 
   {% for i in range(0, n_sliders) %}
-  	{{ slider_names[i] }}
-  	<input type="range" name={{ slider_names[i] }} min="1" max="100" value={{ pref_list[i] }}>
+  	{{ side_effect_names[i] }}
+  	<input type="range" name={{ side_effect_names[i] }} min="1" max="100" value={{ pref_list[i] }}>
   	<br>
   {% endfor %}
  -->
  
-
-	{% for i in range(0, n_sliders) %}
-
-	
 <div class=.container-fluid >
-
-	<div class="row">
-
-		<div class="col-xs-4 col-md-4">{{ slider_names[i] }}
-			<br>			
-			<div class="radio-inline">
-				<label>
-					<input type="radio" name={{ slider_names[i] }} id="optionsRadios1" value=1 
-					{% if pref_list[i] == 1 %} checked {% endif %} >Okay
-			  </label>
-			</div>
-			<div class="radio-inline">
-				<label>
-					<input type="radio" name={{ slider_names[i] }} id="optionsRadios2" value=2
-					{% if pref_list[i] == 2 %} checked {% endif %} >Dislike
-				</label>
-			</div>
-			<div class="radio-inline">
-				<label>
-					<input type="radio" name={{ slider_names[i] }} id="optionsRadios3" value=3
-					{% if pref_list[i] == 3 %} checked {% endif %} >Hate
-				</label>
-			</div>
-			<br>
-		</div>
-		
-<!-- 
-
-		<div class="col-xs-4 col-md-4">{{ slider_names[(i*1+1)] }}
-			<br>			
-			<div class="radio-inline">
-				<label>
-					<input type="radio" name={{ slider_names[(i*1+1)] }} id="optionsRadios1" value="1" checked>Okay
-			  </label>
-			</div>
-			<div class="radio-inline">
-				<label>
-					<input type="radio" name={{ slider_names[(i*1+1)] }} id="optionsRadios2" value="2">Dislike
-				</label>
-			</div>
-			<div class="radio-inline">
-				<label>
-					<input type="radio" name={{ slider_names[(i*1+1)] }} id="optionsRadios2" value="3">Hate
-				</label>
-			</div>
-			<br>
-		</div>
- -->
-
-		
-		<!~~ Add the extra clearfix for only the required viewport ~~>
-		<div class="clearfix visible-xs"></div>
-	</div>
- 
+	{% for i in range(0, n_sliders, 3) %}
 	
+	<div class="row">
+		{% for j in range(0, 3) %}
+		{% set k=i+j %}
+			{% if n_sliders > k %}
+			<div class="col-sm-4"><dt><p>{{ side_effect_names[k] }}</p></dt>						
+				<div class="radio-inline">
+					<label>
+						<input type="radio" name={{ side_effect_names[k] }} id="optionsRadios1" value=0 
+						{% if pref_list[k] == 0 %} checked {% endif %} >Indif
+				  </label>
+				</div>
+				<div class="radio-inline">
+					<label>
+						<input type="radio" name={{ side_effect_names[k] }} id="optionsRadios2" value=1
+						{% if pref_list[k] == 1 %} checked {% endif %} >Tolerate
+					</label>
+				</div>
+				<div class="radio-inline">
+					<label>
+						<input type="radio" name={{ side_effect_names[k] }} id="optionsRadios3" value=2
+						{% if pref_list[k] == 2 %} checked {% endif %} >Avoid
+					</label>
+				</div>
+			</div>
+			{% endif %}
+		{% endfor %}
+	
+	</div>
 
-   {% endfor %}	
 
-
- 
-  </form>
-    <h1>{{ recommendation }}</h1>
-	<h2>{{ indication }}</h2>
+		{% endfor %}	
+	</div>
+	</form>
+	
     </div>
   </div>
 </div>
 
+<img src="static/images/equipment_jarock.jpg" alt="Image Placeholder" height="800">
 
 
 {% endblock %}

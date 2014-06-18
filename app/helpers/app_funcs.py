@@ -1,5 +1,6 @@
 import pandas as pd
-
+import numpy as np
+import matplotlib.pyplot as plt
 
 '''
 THIS FUNCTION SELECTS THE TOP N DRUGS ASSOCIATED WITH AN INDICATION
@@ -45,5 +46,19 @@ def get_side_effect_probabilities(side_effect_tuple, indication, conn):
 	result_df = pd.io.sql.frame_query(query_string, conn)
 	return result_df
 	
+
+def plot_single_effect(pd_slice):
+	'''Expects pandas data slice of side effects and drug name'''
+	plot_name="./app/static/images/plot_single_effect.png"
+	fig = plt.figure();
+	pd_slice.plot(kind='bar')
+	plt.axhline(0, color='k')
+	plt.xlabel('side effect')
+	plt.ylabel('proportion of reported cases')
+	plt.xticks(rotation=45)
+	plt.title(pd_slice.name, color='black')
+	fig.autofmt_xdate()
+	fig.savefig(plot_name, bbox_inches='tight')
+	return
 
 
