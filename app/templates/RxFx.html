@@ -8,6 +8,8 @@
         <p class="lead"> Prescription Drug Side Effects </p>
         <p>Get recommended Rx based on personalized tolerance/intolerance of side effects</p>
 
+<img src="{{ url_for('fig', cropzonekey = title) }}" alt="Image Placeholder" height="100">
+
   <form method=post action="{{ url_for('RxFx') }}" >
 
 	<div class="row">
@@ -55,7 +57,7 @@
 		<div class=container >
 			<div class="row">
 				<div class="col-md-3">
-				<img src="static/images/plot_single_effect.png" alt="drug_side_effects" height="400">
+			Insert image here
 				</div>
 			</div>
 		</div>
@@ -134,10 +136,15 @@
 		{% endfor %}	
 	</div>
 	</form>
+
+	{{ plot_html | safe }}
+
 	
     </div>
   </div>
 </div>
+
+
 
 <img src="static/images/equipment_jarock.jpg" alt="Image Placeholder" height="800">
 

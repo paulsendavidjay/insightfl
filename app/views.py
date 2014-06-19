@@ -5,7 +5,7 @@ from app.helpers.app_funcs import first_n_drugs_assoc_indic, first_n_effects, ge
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import os
+import os, mpld3, io
 
 # To create a database connection, add the following
 # within your view functions:
@@ -31,7 +31,6 @@ def close_db(error):
 def index():
 		# Renders index.html.
 		return render_template('index.html')
-
 @app.route('/RxFx', methods=['GET', 'POST'])
 def RxFx():
 		# Renders RxFx.html.
@@ -47,6 +46,7 @@ def RxFx():
 			pref_list=n_side_effects*[0]
 			recommendation = ""
 			alternates = ""
+			plot_html=""
 		elif request.method=='POST':
 			# handle processing information
 			indication = request.form['indication']
@@ -76,7 +76,7 @@ def RxFx():
 			alternates = score_df.index[1:4]
 			
 			
-			plot_single_effect(prob_table.iloc[:,0])
+			plot_html = plot_single_effect(prob_table.iloc[:,0])
 			
 			
 		return render_template('RxFx.html', 
@@ -85,13 +85,27 @@ def RxFx():
 			n_sliders=len(side_effect_names), 
 			pref_list=pref_list,
 			recommendation=recommendation,
-			alternates=alternates)
+			alternates=alternates,
+			plot_html=plot_html)
+
 
 
 @app.route('/drug_comparisons')
 def drug_comparisons():
 		# Renders slides.html.
 		return render_template('drug_comparisons.html')
+
+@app.route('/images/nanner')
+def images(cropzonekey):
+	return render_template("images.html", title=cropzonekey)
+
+@app.route('/fig/<cropzonekey>')
+def fig(cropzonekey):
+	fig = plt.plot([0,1,2]
+	img = io.StringIO()
+	fig.savefig(img)
+	img.seek(0)
+	return send_file(img, mimetype='image/png')
 
 
 
