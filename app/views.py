@@ -10,7 +10,8 @@ from StringIO import StringIO
 
 app.secret_key = os.urandom(24)
 
-global single_plot_data
+single_plot_data = []
+# session['counter'] = 0
 
 # To create a database connection, add the following
 # within your view functions:
@@ -100,8 +101,9 @@ def RxFx():
 			recommendation = score_df.iloc[0].name
 			alternates = score_df.index[1:4]
 			
-			single_plot_data = pd.DataFrame(prob_table.iloc[:][recommendation]).to_json()
-			
+			session['single_data'] = pd.DataFrame(prob_table.iloc[:][recommendation]).to_json()
+			#return session['single_data']
+			#print single_plot_data
 			
 		return render_template('RxFx.html', 
 			indication=indication,
@@ -122,13 +124,12 @@ def RxFx():
 @app.route('/single_effect_png', methods = ['GET', 'POST'])
 def single_effect_png():
 	'''Expects pandas data slice of side effects and drug name'''
-	json_data = single_plot_data
-	print jason_data
-	single_effect_plot_data = pd.read_json(jason_data)
-	print single_effect_plot_data
+	#print single_plot_data
+	single_effect_plot_data = pd.read_json(session['single_data'])
+	#print single_effect_plot_data
 	values = list(single_effect_plot_data.ix[:,0])
 	indices = [x.encode('UTF8') for x in list(single_effect_plot_data.index)] 
-	print values, indices
+	#print values, indices
 	fig=plt.figure();
 	#single_effect_plot_data.plot(kind='bar')
 	plt.bar(range(0,len(indices)), values, align='center') # test plot
