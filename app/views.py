@@ -10,6 +10,8 @@ from StringIO import StringIO
 
 app.secret_key = os.urandom(24)
 
+global single_plot_data
+
 # To create a database connection, add the following
 # within your view functions:
 # con = con_db(host, port, user, passwd, db)
@@ -65,7 +67,7 @@ def RxFx():
 			pref_list=n_side_effects*[0]
 			recommendation = ""
 			alternates = ""
-			single_effect_plot_data=""
+			single_plot_data=""
 		elif request.method=='POST':
 			# handle processing information
 			indication = request.form['indication']
@@ -98,7 +100,7 @@ def RxFx():
 			recommendation = score_df.iloc[0].name
 			alternates = score_df.index[1:4]
 			
-			session['single_effect_data'] = pd.DataFrame(prob_table.iloc[:][recommendation]).to_json()
+			single_plot_data = pd.DataFrame(prob_table.iloc[:][recommendation]).to_json()
 			
 			
 		return render_template('RxFx.html', 
@@ -120,7 +122,9 @@ def RxFx():
 @app.route('/single_effect_png', methods = ['GET', 'POST'])
 def single_effect_png():
 	'''Expects pandas data slice of side effects and drug name'''
-	single_effect_plot_data = pd.read_json(session['single_effect_data'])
+	json_data = single_plot_data
+	print jason_data
+	single_effect_plot_data = pd.read_json(jason_data)
 	print single_effect_plot_data
 	values = list(single_effect_plot_data.ix[:,0])
 	indices = [x.encode('UTF8') for x in list(single_effect_plot_data.index)] 
