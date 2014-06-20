@@ -4,3 +4,6 @@
  n_gram_replacement_drug_name to reduct set of drugs used (requires exporting drugs.csv and drugs_short.csv to combine key_value pairs)
  
  
+ selected top 39 indications by that were not NULL and were not "unknown"
+ 
+ operate with subjects that have fewer than 4 drugs listed (2,010,495)

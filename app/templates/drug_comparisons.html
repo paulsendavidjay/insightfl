@@ -11,18 +11,51 @@
 	<form method=post action="{{ url_for('drug_comparisons') }}" >
 
 	<div class="row">
-		<div class="col-xs-4">
-		<dl>
+<!-- 	INDICATION LIST		 -->	
+		<div class="col-xs-6"><dl>
 		<dt><p>Indication:</p></dt>
 		<select name="indication">
-			<option value="contraception" {% if indication == 'contraception' %} selected {% endif %}> Birth Control </option>
-			<option value="depression" {% if indication == 'depression' %} selected {% endif %}> Depression </option>
+			
+			{% for i in range(0, (indications|length) ) %}
+			
+			<option value="{{indications[i]}}" 
+				{% if indication == "indications[i]" %} selected {% endif %}
+				> "{{indications[i]}}" </option>
+			
+			{% endfor %}
 		</select>
-		</dl>
-		
+		<input type=submit value=Search>
+		</dl></div>	
+	
+<!-- 	DRUG LIST		 -->
+	<div class="col-xs-6">
+		<dl><dt><p>Rx: {{ current_indication }} </p></dt>
+			<select class="btn-group" multiple="multiple" title='Choose up to 5 of the following...' size=10>
+			{% for i in range(0, (druglist|length) ) %}
+				<option>"{{druglist[i]}}"</option>
+			{% endfor %}
+			</select>
+		</select>
+		</dl></div>	
+	</div>
+
+	</form>
 
 	</div>
-	</form>
+
+
+<div class="btn-group" />.
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('.multiselect').multiselect({
+      buttonContainer: '<span class="dropdown" />'
+    });
+  });
+</script>
+</div>
+	
+	
+	
 	
     </div>
   </div>

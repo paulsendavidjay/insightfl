@@ -22,30 +22,43 @@
   <form method=post action="{{ url_for('RxFx') }}" >
 
 	<div class="row">
-		<div class="col-xs-4">
-		<dl>
+
+<!-- 	INDICATION LIST		 -->	
+		<div class="col-xs-6"><dl>
+
 		<dt><p>Indication:</p></dt>
 		<select name="indication">
 			
-			<option value="contraception" {% if indication == 'contraception' %} selected {% endif %}> Birth Control </option>
+			{% for i in range(0, (indications|length) ) %}
 			
-			<option value="depression" {% if indication == 'depression' %} selected {% endif %}> Depression </option>
+			<option value="{{indications[i]}}" 
+				{% if indication == "indications[i]" %} selected {% endif %}
+				> "{{indications[i]}}" </option>
 			
-			
+			{% endfor %}
 		</select>
-		</dl>
+		<input type=submit value=Search>
+		</dl></div>	
+		</div>
+		
+<!-- 	N SIDE EFFECTS		 -->
+	<div class="col-xs-6">
 		
 		<dl>
 			<dt><p>Number of Side Effects:</p></dt>
 			<select name="n_side_effects">
 				<!-- THIS SETS THE RANGE OF VALUES FOR THE NUMBER OF SIDE EFFECTS TO USE -->
 				{% for i in range(5,16) %}
-					<option value={{i}} {% if i == n_sliders %} selected {% endif %} > {{ i }} </option>
+					<option value={{i}} {% if i == n_effects %} selected {% endif %} > {{i}} </option>
 				{% endfor %}
 			</select>
 			<input type=submit value=Search>
 		</dl>
 		</div>
+		
+		
+		</div>
+		<div class="row">
 	
 		<div class="col-xs-8">
 
@@ -55,6 +68,7 @@
 				<button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
 				  {{ recommendation }}
 				</button>
+				for {{ indication }}
 				{% endif %}
 			</h3>
 			
@@ -70,7 +84,8 @@
 		<div class=container >
 			<div class="row">
 				<div class="col-md-3">
-					place image here?
+					<img class="img-responsive img-rounded" src="{{ url_for('single_effect_png') }}" style="margin-left:auto margin-right:auto" />
+					
 				</div>
 			</div>
 		</div>
@@ -107,28 +122,28 @@
 
  
 <div class=.container-fluid >
-	{% for i in range(0, n_sliders, 3) %}
+	{% for i in range(0, n_effects, 3) %}
 	
 	<div class="row">
 		{% for j in range(0, 3) %}
 		{% set k=i+j %}
-			{% if n_sliders > k %}
+			{% if n_effects > k %}
 			<div class="col-sm-4"><dt><p>{{ side_effect_names[k] }}</p></dt>						
 				<div class="radio-inline">
 					<label>
-						<input type="radio" name={{ side_effect_names[k] }} id="optionsRadios1" value=0 
+						<input type="radio" name="{{ side_effect_names[k] }}" id="optionsRadios1" value=0 
 						{% if pref_list[k] == 0 %} checked {% endif %} >Indif
 				  </label>
 				</div>
 				<div class="radio-inline">
 					<label>
-						<input type="radio" name={{ side_effect_names[k] }} id="optionsRadios2" value=1
+						<input type="radio" name="{{ side_effect_names[k] }}" id="optionsRadios2" value=1
 						{% if pref_list[k] == 1 %} checked {% endif %} >Tolerate
 					</label>
 				</div>
 				<div class="radio-inline">
 					<label>
-						<input type="radio" name={{ side_effect_names[k] }} id="optionsRadios3" value=2
+						<input type="radio" name="{{ side_effect_names[k] }}" id="optionsRadios3" value=2
 						{% if pref_list[k] == 2 %} checked {% endif %} >Avoid
 					</label>
 				</div>
@@ -147,7 +162,8 @@
   </div>
 </div>
 
-<img class="img-responsive img-rounded" src="{{ url_for('single_effect_png') }}" style="margin-left:auto; margin-right:auto;” />
+
+
 <img src="static/images/equipment_jarock.jpg" alt="Image Placeholder" height="800">
 
 
