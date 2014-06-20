@@ -1,15 +1,24 @@
 {% extends "layout/base.html" %}
 
 {% block content %}
+
   <div id="wrap">
     <div class="container">
       <div class="starter-template">
         <h1>RxFx</h1>
-        <p class="lead"> Prescription Drug Side Effects </p>
-        <p>Get recommended Rx based on personalized tolerance/intolerance of side effects</p>
-
-<img src="{{ url_for('fig', cropzonekey = title) }}" alt="Image Placeholder" height="100">
-
+        	
+        <div class="row">
+        	<div class="col-sm-8">
+		        <p class="lead"> Prescription Drug Side Effects </p>
+       		</div>
+        	<div class="col-sm-2">
+        		<a href="drug_comparisons" class="btn btn-primary btn-default active" role="button">Compare Drugs</a>
+        	</div>
+        	<div class="col-sm-2">
+        		<a href="analytics" class="btn btn-primary btn-default active" role="button">Analytics</a>
+        	</div>
+        </div>		
+		        <p>Get recommended Rx based on personalized tolerance/intolerance of side effects</p>
   <form method=post action="{{ url_for('RxFx') }}" >
 
 	<div class="row">
@@ -17,8 +26,12 @@
 		<dl>
 		<dt><p>Indication:</p></dt>
 		<select name="indication">
+			
 			<option value="contraception" {% if indication == 'contraception' %} selected {% endif %}> Birth Control </option>
+			
 			<option value="depression" {% if indication == 'depression' %} selected {% endif %}> Depression </option>
+			
+			
 		</select>
 		</dl>
 		
@@ -57,7 +70,7 @@
 		<div class=container >
 			<div class="row">
 				<div class="col-md-3">
-			Insert image here
+					place image here?
 				</div>
 			</div>
 		</div>
@@ -78,6 +91,7 @@
 				{{ alternates[i] }}{% if i < (alternates|length)-1 %},<sp>{% endif %}
 			{% endfor %}
 			</h4>
+
 		</div>
 
 	</div>      
@@ -91,14 +105,6 @@
 		</div>
     </div>
 
-
-<!-- 
-  {% for i in range(0, n_sliders) %}
-  	{{ side_effect_names[i] }}
-  	<input type="range" name={{ side_effect_names[i] }} min="1" max="100" value={{ pref_list[i] }}>
-  	<br>
-  {% endfor %}
- -->
  
 <div class=.container-fluid >
 	{% for i in range(0, n_sliders, 3) %}
@@ -137,15 +143,11 @@
 	</div>
 	</form>
 
-	{{ plot_html | safe }}
-
-	
     </div>
   </div>
 </div>
 
-
-
+<img class="img-responsive img-rounded" src="{{ url_for('single_effect_png') }}" style="margin-left:auto; margin-right:auto;” />
 <img src="static/images/equipment_jarock.jpg" alt="Image Placeholder" height="800">
 
 

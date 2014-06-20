@@ -1,0 +1,6 @@
+ fda_loop.py to get json files
+ _initialize_db.py to set up schema
+ populate_db.sh and jsons_gz_into_shell.py to get data into data base
+ n_gram_replacement_drug_name to reduct set of drugs used (requires exporting drugs.csv and drugs_short.csv to combine key_value pairs)
+ 
+ 

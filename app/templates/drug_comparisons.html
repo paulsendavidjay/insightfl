@@ -6,11 +6,11 @@
       <div class="starter-template">
         <h1>RxFx</h1>
         <p class="lead"> Prescription Drug Side Effects </p>
-        <p>Get recommended Rx based on personalized tolerance/intolerance of side effects</p>
+        <p>Compare different Rx side effects</p>
 
-  <form method=post action="{{ url_for('dug_comparisons.html') }}" >
+	<form method=post action="{{ url_for('drug_comparisons') }}" >
 
-whi	<div class="row">
+	<div class="row">
 		<div class="col-xs-4">
 		<dl>
 		<dt><p>Indication:</p></dt>
@@ -20,119 +20,7 @@ whi	<div class="row">
 		</select>
 		</dl>
 		
-		<dl>
-			<dt><p>Number of Side Effects:</p></dt>
-			<select name="n_side_effects">
-				<!-- THIS SETS THE RANGE OF VALUES FOR THE NUMBER OF SIDE EFFECTS TO USE -->
-				{% for i in range(5,16) %}
-					<option value={{i}} {% if i == n_sliders %} selected {% endif %} > {{ i }} </option>
-				{% endfor %}
-			</select>
-			<input type=submit value=Search>
-		</dl>
-		</div>
-	
-		<div class="col-xs-8">
 
-			<h3>Recommend:<sp>
-				
-				{% if not recommendation == "" %}
-				<button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
-				  {{ recommendation }}
-				</button>
-				{% endif %}
-			</h3>
-			
-<!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title" id="myModalLabel">{{ recommendation }}</h4>
-      </div>
-      <div class="modal-body">
-		<div class=container >
-			<div class="row">
-				<div class="col-md-3">
-				<img src="static/images/plot_single_effect.png" alt="drug_side_effects" height="400">
-				</div>
-			</div>
-		</div>
-      </div>
-      
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
-      </div>
-    </div>
-  </div>
-</div>			
-<!-- End Modal -->
-			
-			
-			<h4>
-			Close alternatives:<sp>
-			{% for i in range(0, (alternates|length)) %}
-				{{ alternates[i] }}{% if i < (alternates|length)-1 %},<sp>{% endif %}
-			{% endfor %}
-			</h4>
-		</div>
-
-	</div>      
-
-	<!~~ Add the extra clearfix for only the required viewport ~~>
-	<div class="clearfix visible-xs">
-	</div>
-
-	<div class="row">
-		<div class="col-xs-4">
-		</div>
-    </div>
-
-
-<!-- 
-  {% for i in range(0, n_sliders) %}
-  	{{ side_effect_names[i] }}
-  	<input type="range" name={{ side_effect_names[i] }} min="1" max="100" value={{ pref_list[i] }}>
-  	<br>
-  {% endfor %}
- -->
- 
-<div class=.container-fluid >
-	{% for i in range(0, n_sliders, 3) %}
-	
-	<div class="row">
-		{% for j in range(0, 3) %}
-		{% set k=i+j %}
-			{% if n_sliders > k %}
-			<div class="col-sm-4"><dt><p>{{ side_effect_names[k] }}</p></dt>						
-				<div class="radio-inline">
-					<label>
-						<input type="radio" name={{ side_effect_names[k] }} id="optionsRadios1" value=0 
-						{% if pref_list[k] == 0 %} checked {% endif %} >Indif
-				  </label>
-				</div>
-				<div class="radio-inline">
-					<label>
-						<input type="radio" name={{ side_effect_names[k] }} id="optionsRadios2" value=1
-						{% if pref_list[k] == 1 %} checked {% endif %} >Tolerate
-					</label>
-				</div>
-				<div class="radio-inline">
-					<label>
-						<input type="radio" name={{ side_effect_names[k] }} id="optionsRadios3" value=2
-						{% if pref_list[k] == 2 %} checked {% endif %} >Avoid
-					</label>
-				</div>
-			</div>
-			{% endif %}
-		{% endfor %}
-	
-	</div>
-
-
-		{% endfor %}	
 	</div>
 	</form>
 	

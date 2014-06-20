@@ -1,11 +1,14 @@
-from flask import render_template, request, g, Flask, make_response
+from flask import render_template, request, g, Flask, make_response, session, send_file
 from app import app, host, port, user, passwd, db
 from app.helpers.database import con_db
 from app.helpers.app_funcs import first_n_drugs_assoc_indic, first_n_effects, get_side_effect_probabilities, plot_single_effect
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import os, mpld3, io
+import os, mpld3
+from StringIO import StringIO
+
+app.secret_key = os.urandom(24)
 
 # To create a database connection, add the following
 # within your view functions:
@@ -31,6 +34,8 @@ def close_db(error):
 def index():
 		# Renders index.html.
 		return render_template('index.html')
+
+
 @app.route('/RxFx', methods=['GET', 'POST'])
 def RxFx():
 		# Renders RxFx.html.
@@ -46,15 +51,15 @@ def RxFx():
 			pref_list=n_side_effects*[0]
 			recommendation = ""
 			alternates = ""
-			plot_html=""
+			single_effect_plot_data=""
 		elif request.method=='POST':
 			# handle processing information
 			indication = request.form['indication']
-			
+
 			# ENTER ALGORITHM FUNCTION HERE
 			n=request.form['n_side_effects']
 			side_effect_names = first_n_effects(n, indication, conn)
-			
+						
 			pref_list=[]
 			# THIS IS JUST FOR KEEPING THE SAME VALUES
 			for i in side_effect_names:
@@ -70,14 +75,14 @@ def RxFx():
 			
 			dot_product = np.dot(pref_list, prob_table)
 			medicinalproducts = list(prob_table.columns.values)
+			
 			score_df = pd.DataFrame(dot_product, index=medicinalproducts, columns=['score'])
 			score_df=score_df.sort_index(by=['score'])
 			recommendation = score_df.iloc[0].name
 			alternates = score_df.index[1:4]
 			
-			
-			plot_html = plot_single_effect(prob_table.iloc[:,0])
-			
+			session['single_effect_data'] = pd.DataFrame(prob_table.iloc[:][recommendation]).to_json()
+			#return session['single_effect_data']
 			
 		return render_template('RxFx.html', 
 			indication=indication,
@@ -85,8 +90,44 @@ def RxFx():
 			n_sliders=len(side_effect_names), 
 			pref_list=pref_list,
 			recommendation=recommendation,
-			alternates=alternates,
-			plot_html=plot_html)
+			alternates=alternates)
+
+
+
+# ROUTING/VIEW FUNCTIONS
+
+
+@app.route('/single_effect_png', methods = ['GET', 'POST'])
+def single_effect_png():
+	'''Expects pandas data slice of side effects and drug name'''
+	single_effect_plot_data = pd.read_json(session['single_effect_data'])
+	values = list(single_effect_plot_data.ix[:,0])
+	indices = [x.encode('UTF8') for x in list(single_effect_plot_data.index)] 
+	print values, indices
+	fig=plt.figure();
+	#single_effect_plot_data.plot(kind='bar')
+	plt.bar(range(0,len(indices)), values) # test plot
+	# 	plt.axhline(0, color='k')
+	# 	plt.xlabel('side effect')
+	# 	plt.ylabel('proportion of reported cases')
+	# 	plt.xticks(rotation=45)
+	# 	plt.title("Occurence of Side Effects", color='black')
+	# 	fig.autofmt_xdate(rotation=45, ha='right')
+	
+	img = StringIO()
+	fig.savefig(img)
+	img.seek(0)
+	return send_file(img, mimetype='image/png')
+ 
+# @app.route('/single_effect_image', methods = ['GET', 'POST'])
+# def single_effect_image():
+#     form = EditForm(csrf_enabled = False)
+#     if form.validate_on_submit():
+#         return redirect('/solar') # creates analytics
+#     # Renders index.html.
+#     return render_template('index.html',
+#         form = form)
+
 
 
 
@@ -95,17 +136,11 @@ def drug_comparisons():
 		# Renders slides.html.
 		return render_template('drug_comparisons.html')
 
-@app.route('/images/nanner')
-def images(cropzonekey):
-	return render_template("images.html", title=cropzonekey)
+@app.route('/analytics')
+def analytics():
+		# Renders slides.html.
+		return render_template('analytics.html')
 
-@app.route('/fig/<cropzonekey>')
-def fig(cropzonekey):
-	fig = plt.plot([0,1,2]
-	img = io.StringIO()
-	fig.savefig(img)
-	img.seek(0)
-	return send_file(img, mimetype='image/png')
 
 
 

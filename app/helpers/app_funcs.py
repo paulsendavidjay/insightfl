@@ -1,8 +1,7 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import mpld3
-
+from StringIO import StringIO
 '''
 THIS FUNCTION SELECTS THE TOP N DRUGS ASSOCIATED WITH AN INDICATION
 '''
@@ -75,6 +74,8 @@ def plot_single_effect(pd_slice):
 	plt.xticks(rotation=45)
 	plt.title(pd_slice.name, color='black')
 	fig.autofmt_xdate(rotation=45, ha='right')
-	html = mpld3.fig_to_html(fig)
-	return html
+	img = StringIO()
+	fig.savefig(img)
+	img.seek(0)
+	return img
 

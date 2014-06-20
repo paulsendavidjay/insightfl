@@ -1,3 +1,8 @@
+
+
+
+
+
 CREATE TABLE IF NOT EXISTS depression_effect_counts as
 SELECT side.side_effect, drg.medicinalproduct, COUNT(side.side_effect) AS side_effect_count
 FROM (
