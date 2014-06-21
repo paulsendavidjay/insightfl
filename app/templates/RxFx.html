@@ -1,115 +1,128 @@
 {% extends "layout/base.html" %}
 
+
+
 {% block content %}
 
   <div id="wrap">
     <div class="container">
       <div class="starter-template">
         <h1>RxFx</h1>
-        	
+        
+<!--         START LARGE ROW UPPER-->
         <div class="row">
-        	<div class="col-sm-8">
-		        <p class="lead"> Prescription Drug Side Effects </p>
-       		</div>
-        	<div class="col-sm-2">
-        		<a href="drug_comparisons" class="btn btn-primary btn-default active" role="button">Compare Drugs</a>
-        	</div>
-        	<div class="col-sm-2">
-        		<a href="analytics" class="btn btn-primary btn-default active" role="button">Analytics</a>
-        	</div>
-        </div>		
-		        <p>Get recommended Rx based on personalized tolerance/intolerance of side effects</p>
-  <form method=post action="{{ url_for('RxFx') }}" >
-
-	<div class="row">
-
-<!-- 	INDICATION LIST		 -->	
-		<div class="col-xs-6"><dl>
-
-		<dt><p>Indication:</p></dt>
-		<select name="indication">
-			
-			{% for i in range(0, (indications|length) ) %}
-			
-			<option value="{{indications[i]}}" 
-				{% if indication == "indications[i]" %} selected {% endif %}
-				> "{{indications[i]}}" </option>
-			
-			{% endfor %}
-		</select>
-		<input type=submit value=Search>
-		</dl></div>	
-		</div>
+<!--         START LEFT HAND COLUMNS OF LARGE ROW UPPER-->
+			<div class="col-sm-7 col-md-7 col-lg-7"><dl>
 		
-<!-- 	N SIDE EFFECTS		 -->
-	<div class="col-xs-6">
-		
-		<dl>
-			<dt><p>Number of Side Effects:</p></dt>
-			<select name="n_side_effects">
-				<!-- THIS SETS THE RANGE OF VALUES FOR THE NUMBER OF SIDE EFFECTS TO USE -->
-				{% for i in range(5,16) %}
-					<option value={{i}} {% if i == n_effects %} selected {% endif %} > {{i}} </option>
-				{% endfor %}
-			</select>
-			<input type=submit value=Search>
-		</dl>
-		</div>
-		
-		
-		</div>
-		<div class="row">
-	
-		<div class="col-xs-8">
-
-			<h3>Recommend:<sp>
-				
-				{% if not recommendation == "" %}
-				<button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
-				  {{ recommendation }}
-				</button>
-				for {{ indication }}
-				{% endif %}
-			</h3>
-			
-<!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title" id="myModalLabel">{{ recommendation }}</h4>
-      </div>
-      <div class="modal-body">
-		<div class=container >
-			<div class="row">
-				<div class="col-md-3">
-					<img class="img-responsive img-rounded" src="{{ url_for('single_effect_png') }}" style="margin-left:auto margin-right:auto" />
-					
+		<!-- 	BEGIN ROWS OF FIRST COLUMN OF LARGE ROW UPPER-->
+				<div class="row">
+					<p class="lead"> Prescription Drug Side Effects </p>
+				</div>        
+				<div class="row">
+						<p>Get recommended Rx based on personalized tolerance/intolerance of side effects</p>
 				</div>
+
+				<form method=post action="{{ url_for('RxFx') }}" >
+
+
+		<!-- 	INDICATION DROPDOWN	ROW	 -->	
+				<div class="row">
+
+					<dt><p>Indication:</p></dt>
+					<select name="indication">
+			
+						{% for i in range(0, (indications|length) ) %}
+							<option value="{{indications[i]}}" 
+								{% if indication == "indications[i]" %} selected {% endif %}
+								> "{{indications[i]}}" </option>			
+						{% endfor %}
+
+					</select>
+					<input type=submit value=Search>
+				</div>	 <!-- END INDICATIONS DROP DOWN ROW-->
+
+		<!-- 	N SIDE EFFECTS DROPDOWN	ROW -->		
+				<div class="row">
+					<dt><p>Number of Side Effects:</p></dt>
+					<select name="n_side_effects">
+						<!-- THIS SETS THE RANGE OF VALUES FOR THE NUMBER OF SIDE EFFECTS TO USE -->
+						{% for i in range(5,16) %}
+							<option value={{i}} {% if i == n_effects %} selected {% endif %} > {{i}} </option>
+						{% endfor %}
+					</select>
+					<input type=submit value=Search>
+				</div> <!-- END N SIDE EFFECTS  DROP DOWN ROW-->
+		
+
+
+		<!-- 		ROW FOR RECOMMENDATION -->
+				<div class="row">
+	
+
+					<h3>Recommend:<sp>
+				
+						{% if not recommendation == "" %}
+						{{ recommendation }} for {{ indication }}				
+							<button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#myModal">
+							Details
+							</button>
+						{% endif %}
+					</h3>
+			
+					<!-- Modal -->
+					<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+					  <div class="modal-dialog">
+						<div class="modal-content">
+						  <div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+							<h4 class="modal-title" id="myModalLabel">{{ recommendation }}</h4>
+						  </div>
+						  <div class="modal-body">
+							<div class=container >
+								<div class="row">
+									<div class="col-md-3">
+									<!-- SINGLE PLOT FIGURE -->
+									<img class="img-responsive img-rounded" 
+									src="{{ url_for('single_effect_png', data_string=single_plot_data_json) }}" style="margin-left:auto margin-right:auto" />
+									</div>
+								</div>
+							</div>
+						  </div>
+	  
+						  <div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						  </div>
+						</div>
+					  </div>
+					</div>			
+					<!-- End Modal -->
+			
+			
+					<h4>
+					Close alternatives:<sp>
+					{% for i in range(0, (alternates|length)) %}
+						{{ alternates[i] }}{% if i < (alternates|length)-1 %},<sp>{% endif %}
+					{% endfor %}
+					</h4>
+
+			</div>   <!-- END ROWS FOR RECS AND ALTERNATIVES -->
+
+
+		
+			</div> <!-- END COLUMN ONE -->
+
+		<!-- 	END FIRST COLUMNS OF LARGE ROW -->
+
+			<div class="col-sm-5 col-md-5 col-lg-5">
+				<!-- SINGLE PLOT FIGURE -->
+				<img class="img-responsive img-rounded" 
+				src="{{ url_for('single_effect_png', data_string=single_plot_data_json) }}" style="margin-left:auto margin-right:auto" />
 			</div>
-		</div>
-      </div>
-      
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>			
-<!-- End Modal -->
-			
-			
-			<h4>
-			Close alternatives:<sp>
-			{% for i in range(0, (alternates|length)) %}
-				{{ alternates[i] }}{% if i < (alternates|length)-1 %},<sp>{% endif %}
-			{% endfor %}
-			</h4>
 
-		</div>
 
-	</div>      
+
+
+
 
 	<!~~ Add the extra clearfix for only the required viewport ~~>
 	<div class="clearfix visible-xs">
@@ -161,7 +174,6 @@
     </div>
   </div>
 </div>
-
 
 
 <img src="static/images/equipment_jarock.jpg" alt="Image Placeholder" height="800">

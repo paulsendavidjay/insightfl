@@ -1,16 +1,16 @@
-from flask import render_template, request, g, Flask, make_response, session, send_file
+from flask import render_template, request, Flask, make_response, session, send_file, g
 from app import app, host, port, user, passwd, db
 from app.helpers.database import con_db
 from app.helpers.app_funcs import *
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import os, mpld3, pickle
+import os, pickle
 from StringIO import StringIO
 
 app.secret_key = os.urandom(24)
 
-single_plot_data = []
+
 # session['counter'] = 0
 
 # To create a database connection, add the following
@@ -18,7 +18,7 @@ single_plot_data = []
 # con = con_db(host, port, user, passwd, db)
 
 
-
+# PROVIDE A CONNECTION OBJECT ONLY IF ONE IS NOT ALREADY CONNECTED
 def get_db():
 	'''Open new connection to db'''
 	if not hasattr(g, 'mysql_db'):
@@ -39,19 +39,20 @@ def close_db(error):
 
 
 # ROUTING/VIEW FUNCTIONS
-@app.route('/')
 @app.route('/index')
 def index():
 		# Renders index.html.
 		return render_template('index.html')
 
 
+
+@app.route('/')
 @app.route('/RxFx', methods=['GET', 'POST'])
 def RxFx():
 		# Renders RxFx.html.
 		conn = get_db() 	# returns connection object
 		c = conn.cursor() # create cursor object
-		
+		# GET LIST OF INDICATIONS
 		query_string = '''
 			SELECT indication, indication_single_term 
 			FROM top_indications'''
@@ -68,7 +69,7 @@ def RxFx():
 			pref_list=n_side_effects*[0]
 			recommendation = ""
 			alternates = ""
-			single_plot_data=""
+			single_plot_data_json=""
 		elif request.method=='POST':
 			# handle processing information
 			indication = request.form['indication']
@@ -93,17 +94,23 @@ def RxFx():
 			prob_table = pd.pivot_table(prob_df, 'effect_proportion', rows='side_effect', cols='drug_short_name')
 			prob_table = prob_table.fillna(0)
 			
+			print "RXFX: prob_table1", str(prob_table)
+			
 			dot_product = np.dot(pref_list, prob_table)
 			drug_short_names = list(prob_table.columns.values)
+			
+			#print "drug_short_names:", str(drug_short_names)
 			
 			score_df = pd.DataFrame(dot_product, index=drug_short_names, columns=['score'])
 			score_df=score_df.sort_index(by=['score'])
 			recommendation = score_df.iloc[0].name
 			alternates = score_df.index[1:4]
 			
-			session['single_data'] = pd.DataFrame(prob_table.iloc[:][recommendation]).to_json()
-			#return session['single_data']
-			#print single_plot_data
+			#print "prob table2:", str(prob_table.iloc[:][recommendation])
+			
+			#g.single_plot_data = prob_table.iloc[:][recommendation]
+			single_plot_data_json = pd.DataFrame(prob_table.iloc[:][recommendation]).to_json()
+			print "RXFX: single_plot_data_json", str(single_plot_data_json)
 			
 		return render_template('RxFx.html', 
 			indication=indication,
@@ -113,7 +120,8 @@ def RxFx():
 			recommendation=recommendation,
 			alternates=alternates,
 			indications = indications,
-			indications_single_term = indications_single_term
+			indications_single_term = indications_single_term,
+			single_plot_data_json = single_plot_data_json
 			)
 
 
@@ -121,12 +129,16 @@ def RxFx():
 # ROUTING/VIEW FUNCTIONS
 
 
-@app.route('/single_effect_png', methods = ['GET', 'POST'])
-def single_effect_png():
-	'''Expects pandas data slice of side effects and drug name'''
-	#print single_plot_data
-	single_effect_plot_data = pd.read_json(session['single_data'])
-	#print single_effect_plot_data
+@app.route('/single_effect_png/<data_string>', methods=['GET','POST'])
+def single_effect_png(data_string):
+	'''Expects pandas data slice of side effects and drug name'''	
+	single_effect_plot_data = pd.read_json(data_string)
+	t = open("tst.txt", 'a')
+	t.write(str(data_string))
+	t.write(str(single_effect_plot_data))
+	t.close()
+	
+	print "SINGLE EFFECT PNG: single_effect_plot_data", single_effect_plot_data
 	values = list(single_effect_plot_data.ix[:,0])
 	indices = [x.encode('UTF8') for x in list(single_effect_plot_data.index)] 
 	#print values, indices
@@ -145,15 +157,6 @@ def single_effect_png():
 	img.seek(0)
 	return send_file(img, mimetype='image/png')
  
-# @app.route('/single_effect_image', methods = ['GET', 'POST'])
-# def single_effect_image():
-#     form = EditForm(csrf_enabled = False)
-#     if form.validate_on_submit():
-#         return redirect('/solar') # creates analytics
-#     # Renders index.html.
-#     return render_template('index.html',
-#         form = form)
-
 
 
 
@@ -214,6 +217,8 @@ def about():
 def contact():
 		# Renders author.html.
 		return render_template('author.html')
+
+
 
 @app.errorhandler(404)
 def page_not_found(error):

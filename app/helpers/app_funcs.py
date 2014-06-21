@@ -66,6 +66,22 @@ def get_side_effect_probabilities(side_effect_tuple, indication_single_term, con
 	
 
 
+def get_side_effect_probs_by_single_drug(side_effect_tuple, indication_single_term, drug, conn):
+	query_string = '''
+		SELECT side_effect, SUM(side_effect_count/patient_count) AS effect_proportion
+		FROM {0}_props
+		WHERE side_effect IN {1}
+		AND drug_short_name = "{2}"
+		GROUP BY side_effect, drug_short_name'''.format(indication_single_term, side_effect_tuple, drug)
+	result_df = pd.io.sql.frame_query(query_string, conn)
+	return result_df
+
+
+
+
+
+
+
 def plot_single_effect(pd_slice):
 	'''Expects pandas data slice of side effects and drug name'''
 	fig=plt.figure();
