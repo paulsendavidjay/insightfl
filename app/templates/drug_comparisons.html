@@ -1,6 +1,49 @@
 {% extends "layout/base.html" %}
 
+
+<script src="prototype.js"></script>
+<script src="jquery.js"></script>
+<script>
+ 
+var $j = jQuery.noConflict();
+// $j is now an alias to the jQuery function; creating the new alias is optional.
+ 
+$j(document).ready(function() {
+    $j( "div" ).hide();
+});
+ 
+// The $ variable now has the prototype meaning, which is a shortcut for
+// document.getElementById(). mainDiv below is a DOM element, not a jQuery object.
+window.onload = function() {
+    var mainDiv = $( "main" );
+}
+ 
+</script>
+
+
 {% block content %}
+
+    <script type="text/javascript" src="{{ url_for('static', filename='vendor/bootstrap-select/js/jquery-1.11.0.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='vendor/bootstrap/dist/js/bootstrap-select.js') }}"></script>
+    <link rel="stylesheet" type="text/css" href="text/javascript" src="{{ url_for('static', filename='vendor/bootstrap/dist/css/bootstrap-select.css') }}">
+
+    <!-- 3.0 -->
+    <link href="text/javascript" src="{{ url_for('static', filename='vendor/bootstrap-select/css/bootstrap-multiselect.css') }}" rel="stylesheet">
+    <link href="text/javascript" src="{{ url_for('static', filename='vendor/bootstrap-select/bootstrap-3.1.1.min.css') }}" rel="stylesheet">
+    <script src="text/javascript" src="{{ url_for('static', filename='vendor/bootstrap-select/js/bootstrap-3.1.1.min.js') }}"></script>
+
+<script type="text/javascript">
+	$(window).on('load', function () {
+
+		$('.selectpicker').selectpicker({
+		});
+
+		// $('.selectpicker').selectpicker('hide');
+	});
+</script>
+
+
+
   <div id="wrap">
     <div class="container">
       <div class="starter-template">
@@ -8,60 +51,88 @@
         <p class="lead"> Prescription Drug Side Effects </p>
         <p>Compare different Rx side effects</p>
 
+
 	<form method=post action="{{ url_for('drug_comparisons') }}" >
 
 	<div class="row">
 <!-- 	INDICATION LIST		 -->	
-		<div class="col-xs-6"><dl>
-		<dt><p>Indication:</p></dt>
-		<select name="indication">
+	<div class="col-xs-5 col-md-5 col-lg-5">
+
+		<div class="row">
+			<dt><p>Indication:</p></dt>
+			<select name="indication">
 			
-			{% for i in range(0, (indications|length) ) %}
+				{% for i in range(0, (indications|length) ) %}
 			
-			<option value="{{indications[i]}}" 
-				{% if indication == "indications[i]" %} selected {% endif %}
-				> "{{indications[i]}}" </option>
+				<option value="{{indications[i]}}" 
+					{% if indication == "indications[i]" %} selected {% endif %}
+					> "{{indications[i]}}" </option>
 			
-			{% endfor %}
-		</select>
-		<input type=submit value=Search>
-		</dl></div>	
-	
-<!-- 	DRUG LIST		 -->
-	<div class="col-xs-6">
-		<dl><dt><p>Rx: {{ current_indication }} </p></dt>
-			<select class="btn-group" multiple="multiple" title='Choose up to 5 of the following...' size=10>
-			{% for i in range(0, (druglist|length) ) %}
-				<option>"{{druglist[i]}}"</option>
-			{% endfor %}
+				{% endfor %}
 			</select>
-		</select>
-		</dl></div>	
+			<input type=submit value=Search>
+		</div>	
+	
 	</div>
+	</div>
+		
 
+	<!~~ Add the extra clearfix for only the required viewport ~~>
+	<div class="clearfix visible-xs"></div>
+	<div class="row"></div>
+
+	<div class="row">
+	<div class="col-xs-7 col-md-7 col-lg-7">
+
+	<!-- 	DRUG LIST		 -->
+		<div class="row">
+			<dt><p>Rx: {{ current_indication }} </p></dt>
+			<select name=drug_selection class="btn-group" multiple="multiple" title='Choose up to 5 of the following...' size=10>
+				{% for i in range(0, (druglist|length) ) %}
+					<option>"{{druglist[i]}}"</option>
+				{% endfor %}
+			</select>
+			<input type=submit value=Search>
+
+		</div>	
 	</form>
+	</div>
+	
+	
+	<div class="col-xs-5 col-md-5 col-lg-5"><dl>
 
+		FIGURE HERE
+	
+	</div>
+	
 	</div>
 
 
-<div class="btn-group" />.
-<script type="text/javascript">
-  $(document).ready(function() {
-    $('.multiselect').multiselect({
-      buttonContainer: '<span class="dropdown" />'
-    });
-  });
-</script>
-</div>
-	
-	
+
+	<!~~ Add the extra clearfix for only the required viewport ~~>
+	<div class="clearfix visible-xs"></div>
+
+
+
+
+
+<select id="id_select" class="selectpicker" multiple data-live-search="true">
+	<option>cow</option>
+	<option>bull</option>
+	<option>ASD</option>
+	<option>Bla</option>
+	<option>Ble</option>
+</select>
+
+
+
+
 	
 	
     </div>
   </div>
 </div>
 
-<img src="static/images/equipment_jarock.jpg" alt="Image Placeholder" height="800">
 
 
 {% endblock %}

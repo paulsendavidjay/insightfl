@@ -188,6 +188,7 @@ def drug_comparisons():
 				WHERE drugindication = "{0}"'''.format(current_indication)
 			druglist = list(pd.io.sql.frame_query(query_string, conn).sort("drug_short_name").ix[:,0])
 			
+			drug_selection = request.form['drug_selection']
 			
 			
 			#current_Rx_list = request.form['Rx']

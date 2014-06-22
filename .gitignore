@@ -1,5 +1,12 @@
+<<<<<<< HEAD
 .DS_Store
 venv/
 app/static/vendor
 node_modules
 *.pyc
+=======
+# Project files.
+*.project
+.idea/
+nbproject/
+>>>>>>> 7a5590defc606c6ca6a55e5caed28ba051e5f065

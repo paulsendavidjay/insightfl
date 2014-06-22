@@ -11,7 +11,11 @@
     <title>RxFx</title>
 
     <!-- Bootstrap core CSS -->
+    <link href="text/javascript" src="{{ url_for('static', filename='vendor/bootstrap-select/bootstrap-3.1.1.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='vendor/bootstrap/dist/css/bootstrap.min.css') }}" rel="stylesheet">
+
+
+
 
     <!-- Revealjs core CSS -->
     <link href="{{ url_for('static', filename='vendor/components-revealjs/css/reveal.min.css') }}" rel="stylesheet">
@@ -26,7 +30,7 @@
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
 
 	<!-- d3 -->
-	<script src="http://d3js.org/d3.v3.min.js"></script>
+<!-- 	<script src="http://d3js.org/d3.v3.min.js"></script> -->
 
 
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
@@ -81,26 +85,11 @@
 	.click(function(e) {e.preventDefault();});
 	});
 	</script>
-	<!-- Initialize the plugin: -->
-	<script type="text/javascript">
-	  $(document).ready(function() {
-		$('.multiselect').multiselect();
-	  });
-	</script>
 
-	<link rel="stylesheet" href="css/bootstrap.min.css" type="text/css"/>
-	<script type="text/javascript" src="js/jquery.min.js"></script>
-	<script type="text/javascript" src="js/bootstrap.min.js"></script>
- 
-	<!-- Include the plugin's CSS and JS: -->
-	<script type="text/javascript" src="js/bootstrap-multiselect.js"></script>
-	<link rel="stylesheet" href="css/bootstrap-multiselect.css" type="text/css"/>
- 
 
-	<!-- Include the plugin's CSS and JS: -->
-	<script type="text/javascript" src="js/bootstrap-multiselect.js"></script>
-	<link rel="stylesheet" href="css/bootstrap-multiselect.css" type="text/css"/>
- 
+
+
+	
     <!-- Page specific script files -->
     {% block scripts %}{% endblock %}
 

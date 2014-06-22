@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "name": "InsightFL",
   "version": "0.1.0",
   "homepage": "https://github.com/stormpython/insightfl",
@@ -21,5 +22,16 @@
     "jquery": "~2.1.0",
     "components-revealjs": "~2.6.1",
     "Genericons": "https://github.com/Automattic/Genericons.git"
+=======
+  "name": "bootstrap-multiselect",
+  "version": "0.9.4",
+  "main": [
+    "./js/bootstrap-multiselect.js",
+    "./css/bootstrap-multiselect.css"
+  ],
+  "dependencies": {
+    "jquery": ">= 1.11.0",
+    "bootstrap": ">= 2.3.2"
+>>>>>>> 7a5590defc606c6ca6a55e5caed28ba051e5f065
   }
 }
