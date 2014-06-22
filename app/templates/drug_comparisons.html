@@ -1,13 +1,10 @@
 {% extends "layout/base.html" %}
 
 
-<script src="prototype.js"></script>
-<script src="jquery.js"></script>
 <script>
  
 var $j = jQuery.noConflict();
 // $j is now an alias to the jQuery function; creating the new alias is optional.
- 
 $j(document).ready(function() {
     $j( "div" ).hide();
 });
@@ -17,20 +14,47 @@ $j(document).ready(function() {
 window.onload = function() {
     var mainDiv = $( "main" );
 }
- 
 </script>
+
+
+
 
 
 {% block content %}
 
-    <script type="text/javascript" src="{{ url_for('static', filename='vendor/bootstrap-select/js/jquery-1.11.0.min.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='vendor/bootstrap/dist/js/bootstrap-select.js') }}"></script>
-    <link rel="stylesheet" type="text/css" href="text/javascript" src="{{ url_for('static', filename='vendor/bootstrap/dist/css/bootstrap-select.css') }}">
 
-    <!-- 3.0 -->
-    <link href="text/javascript" src="{{ url_for('static', filename='vendor/bootstrap-select/css/bootstrap-multiselect.css') }}" rel="stylesheet">
-    <link href="text/javascript" src="{{ url_for('static', filename='vendor/bootstrap-select/bootstrap-3.1.1.min.css') }}" rel="stylesheet">
-    <script src="text/javascript" src="{{ url_for('static', filename='vendor/bootstrap-select/js/bootstrap-3.1.1.min.js') }}"></script>
+
+<script type="text/javascript" src="{{ url_for('static', filename='vendor/jquery/dist/jquery.min.js') }}"></script>
+
+<!-- 	BOOTSTRAP SELECT CSS -->
+<!-- 	this file needed for drop down selector -->
+<script type="text/javascript" src="{{ url_for('static', filename='vendor/bootstrap/dist/js/bootstrap-select.js') }}"></script>    
+
+<!-- 	BOOTSTRAP SELECT CSS -->
+<link rel="stylesheet" type="text/css" href="text/javascript" src="{{ url_for('static', filename='vendor/bootstrap/dist/css/bootstrap-select.css') }}">
+
+
+
+<script type="text/javascript">
+  // Dynamically add the bootstrap 'active' class to navbar links.
+  $(document).ready(function($){
+	var urlPath = window.location.pathname.split('/')[1];
+	  $('.nav a[href="'+ urlPath +'"]').parent().addClass('active');
+  });
+</script>
+<script>
+$(function (){
+$('[data-toggle="modal"]')
+.popover({trigger: 'click', html: 'true', placement: "bottom"})
+.click(function(e) {e.preventDefault();});
+});
+</script>
+
+
+
+
+
+
 
 <script type="text/javascript">
 	$(window).on('load', function () {
@@ -136,6 +160,15 @@ window.onload = function() {
 
 
 {% endblock %}
+
+
+
+
+
+
+
+
+
 
 
 {% block footer %}
