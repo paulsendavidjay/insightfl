@@ -94,7 +94,7 @@ def RxFx():
 			prob_table = pd.pivot_table(prob_df, 'effect_proportion', rows='side_effect', cols='drug_short_name')
 			prob_table = prob_table.fillna(0)
 			
-			print "RXFX: prob_table1", str(prob_table)
+			#print "RXFX: prob_table1", str(prob_table)
 			
 			dot_product = np.dot(pref_list, prob_table)
 			drug_short_names = list(prob_table.columns.values)
@@ -110,7 +110,7 @@ def RxFx():
 			
 			#g.single_plot_data = prob_table.iloc[:][recommendation]
 			single_plot_data_json = pd.DataFrame(prob_table.iloc[:][recommendation]).to_json()
-			print "RXFX: single_plot_data_json", str(single_plot_data_json)
+			#print "RXFX: single_plot_data_json", str(prob_table.iloc[:][recommendation])
 			
 		return render_template('RxFx.html', 
 			indication=indication,
@@ -133,19 +133,17 @@ def RxFx():
 def single_effect_png(data_string):
 	'''Expects pandas data slice of side effects and drug name'''	
 	single_effect_plot_data = pd.read_json(data_string)
-	t = open("tst.txt", 'a')
-	t.write(str(data_string))
-	t.write(str(single_effect_plot_data))
-	t.close()
+	drug_name = str(single_effect_plot_data.columns.values[0])
+	single_effect_plot_data=single_effect_plot_data.sort(drug_name, ascending=False)
 	
-	print "SINGLE EFFECT PNG: single_effect_plot_data", single_effect_plot_data
+	print "SINGLE EFFECT PNG: single_effect_plot_data", drug_name
 	values = list(single_effect_plot_data.ix[:,0])
 	indices = [x.encode('UTF8') for x in list(single_effect_plot_data.index)] 
 	#print values, indices
 	fig=plt.figure();
 	#single_effect_plot_data.plot(kind='bar')
 	plt.bar(range(0,len(indices)), values, align='center') # test plot
-	plt.axhline(0, color='k')
+	plt.axhline(0, color='r')
 	plt.xlabel('side effect', fontsize=16)
 	plt.ylabel('proportion of reported cases', fontsize=16)
 	plt.xticks(range(0,len(indices)), indices, rotation=45)
@@ -171,7 +169,7 @@ def drug_comparisons():
 		indication_list = pd.io.sql.frame_query(query_string, conn).sort("indication")
 		indications = list(indication_list['indication'])
 		indications_single_term = list(indication_list['indication_single_term'])
-		
+		druglist=""
 		if request.method=='GET':
 			query_string = '''
 				SELECT drug_short_name
@@ -180,21 +178,24 @@ def drug_comparisons():
 			druglist = list(pd.io.sql.frame_query(query_string, conn).sort("drug_short_name").ix[:,0])
 			
 			current_indication=indications[0]
+			drug_selection=""
+		
 		elif request.method=='POST':
+			druglist=""
 			current_indication = request.form['indication']
 			query_string = '''
-				SELECT drug_short_name
-				FROM drugs_by_indication_short
-				WHERE drugindication = "{0}"'''.format(current_indication)
+			SELECT drug_short_name
+			FROM drugs_by_indication_short
+			WHERE drugindication = "{0}"'''.format(current_indication)
 			druglist = list(pd.io.sql.frame_query(query_string, conn).sort("drug_short_name").ix[:,0])
-			
-			drug_selection = request.form['drug_selection']
+			 
+			drug_selection = request.form.getlist('drugs_selected') 
 			
 			
 			#current_Rx_list = request.form['Rx']
 			#print current_Rx_list
 		
-		print str(druglist)
+		print drug_selection
 		return render_template('drug_comparisons.html',
 			indications = indications,
 			indications_single_term = indications_single_term,

@@ -45,7 +45,7 @@ $('[data-toggle="modal"]')
 			
 						{% for i in range(0, (indications|length) ) %}
 							<option value="{{indications[i]}}" 
-								{% if indication == "indications[i]" %} selected {% endif %}
+								{% if indications[i] == indication %} selected {% endif %}
 								> "{{indications[i]}}" </option>			
 						{% endfor %}
 
@@ -74,7 +74,7 @@ $('[data-toggle="modal"]')
 					<h3>Recommend:<sp>
 				
 						{% if not recommendation == "" %}
-						{{ recommendation }} for {{ indication }}				
+						{{ recommendation }}
 							<button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#myModal">
 							Details
 							</button>
