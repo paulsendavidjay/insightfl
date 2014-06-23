@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # RxFx
 
 ### Introduction
