@@ -5,17 +5,12 @@ from app.helpers.app_funcs import *
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import os, pickle
+from ggplot import *
+import os, pickle, ast
 from StringIO import StringIO
 
 app.secret_key = os.urandom(24)
 
-
-# session['counter'] = 0
-
-# To create a database connection, add the following
-# within your view functions:
-# con = con_db(host, port, user, passwd, db)
 
 
 # PROVIDE A CONNECTION OBJECT ONLY IF ONE IS NOT ALREADY CONNECTED
@@ -90,27 +85,19 @@ def RxFx():
 				except:
 					pref_list.append(0)
 			
-			prob_df = get_side_effect_probabilities(tuple(side_effect_names), str(indications_dict[indication]), conn)
+			prob_df = get_side_effect_probabilities(str(indications_dict[indication]), tuple(side_effect_names), conn)
 			prob_table = pd.pivot_table(prob_df, 'effect_proportion', rows='side_effect', cols='drug_short_name')
 			prob_table = prob_table.fillna(0)
 			
-			#print "RXFX: prob_table1", str(prob_table)
-			
 			dot_product = np.dot(pref_list, prob_table)
 			drug_short_names = list(prob_table.columns.values)
-			
-			#print "drug_short_names:", str(drug_short_names)
 			
 			score_df = pd.DataFrame(dot_product, index=drug_short_names, columns=['score'])
 			score_df=score_df.sort_index(by=['score'])
 			recommendation = score_df.iloc[0].name
 			alternates = score_df.index[1:4]
 			
-			#print "prob table2:", str(prob_table.iloc[:][recommendation])
-			
-			#g.single_plot_data = prob_table.iloc[:][recommendation]
 			single_plot_data_json = pd.DataFrame(prob_table.iloc[:][recommendation]).to_json()
-			#print "RXFX: single_plot_data_json", str(prob_table.iloc[:][recommendation])
 			
 		return render_template('RxFx.html', 
 			indication=indication,
@@ -142,12 +129,11 @@ def single_effect_png(data_string):
 	#print values, indices
 	fig=plt.figure();
 	#single_effect_plot_data.plot(kind='bar')
-	plt.bar(range(0,len(indices)), values, align='center') # test plot
-	plt.axhline(0, color='r')
-	plt.xlabel('side effect', fontsize=16)
+	plt.bar(range(0,len(indices)), values, align='center', color='chartreuse') # test plot
+	plt.axhline(0, color='k')
 	plt.ylabel('proportion of reported cases', fontsize=16)
 	plt.xticks(range(0,len(indices)), indices, rotation=45)
-	plt.title("Occurence of Side Effects", color='black', fontsize=20)
+	plt.title(drug_name, color='black', fontsize=20)
 	fig.autofmt_xdate(ha='right')
 	
 	img = StringIO()
@@ -155,6 +141,8 @@ def single_effect_png(data_string):
 	img.seek(0)
 	return send_file(img, mimetype='image/png')
  
+
+
 
 
 
@@ -178,7 +166,7 @@ def drug_comparisons():
 			druglist = list(pd.io.sql.frame_query(query_string, conn).sort("drug_short_name").ix[:,0])
 			
 			current_indication=indications[0]
-			drug_selection=""
+			drug_selection=[]
 		
 		elif request.method=='POST':
 			druglist=""
@@ -190,7 +178,7 @@ def drug_comparisons():
 			druglist = list(pd.io.sql.frame_query(query_string, conn).sort("drug_short_name").ix[:,0])
 			 
 			drug_selection = request.form.getlist('drugs_selected') 
-			
+			drug_selection = [x.encode('UTF8') for x in drug_selection]
 			
 			#current_Rx_list = request.form['Rx']
 			#print current_Rx_list
@@ -199,8 +187,58 @@ def drug_comparisons():
 		return render_template('drug_comparisons.html',
 			indications = indications,
 			indications_single_term = indications_single_term,
-			druglist = druglist, current_indication = current_indication
+			druglist = druglist, 
+			current_indication = current_indication,
+			drug_selection = drug_selection
 			)
+
+
+
+
+
+
+
+@app.route('/multi_effect_png/<current_indication>/<drug_selection>', methods=['GET','POST'])
+def multi_effect_png(current_indication, drug_selection):
+	'''Expects pandas data slice of side effects and drug name'''	
+	conn = get_db() 	# returns connection object
+	
+	drug_selection = ast.literal_eval(drug_selection)
+	
+	prob_df = get_side_effect_probs_for_multi_drug(current_indication, tuple(drug_selection), conn)
+	
+	prob_table = pd.pivot_table(prob_df, 'effect_proportion', rows='side_effect', cols='drug_short_name')
+	prob_table = prob_table.fillna(0.00001)
+	prob_df2 = prob_table.stack().reset_index()
+	prob_df2.columns=['side_effect','drug','probability']
+	
+	col_names = ["","",""]#prob_table.columns.values
+	ylimit = max(prob_df2['probability']+0.01)
+	break_list = list(np.arange(len(col_names)) + 1)
+	p = ggplot(prob_df2, aes(x='drug',weight='probability',fill="drug")) + \
+		geom_bar() + \
+		ylab("") + \
+		xlab("") + \
+		ylim(0,ylimit) +\
+		scale_x_continuous(breaks=break_list,labels=list(col_names)) +\
+		scale_y_continuous(breaks=(0.025,0.05,0.75,0.1), labels=("2.5%", "5.0%", "7.5%", "10%")) +\
+		facet_wrap('side_effect', ncol=2)
+
+	img2 = StringIO()
+	fig=p.draw()
+	fig.set_size_inches(6,10.5)
+	fig.savefig(img2, dpi=100)
+	ggsave(plot=p, filename="test.png")	
+	img2.seek(0)
+	return send_file(img2, mimetype='image/png')
+
+
+
+
+
+
+
+
 
 @app.route('/analytics')
 def analytics():

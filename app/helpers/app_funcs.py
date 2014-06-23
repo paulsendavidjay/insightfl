@@ -55,9 +55,9 @@ def first_n_effects(n, indication_single_term, conn):
 	return result
 
 
-def get_side_effect_probabilities(side_effect_tuple, indication_single_term, conn):
+def get_side_effect_probabilities(indication_single_term, side_effect_tuple, conn):
 	query_string = '''
-		SELECT side_effect, drug_short_name, SUM(side_effect_count/patient_count) AS effect_proportion
+		SELECT side_effect, drug_short_name, (side_effect_count/patient_count) AS effect_proportion
 		FROM {0}_props
 		WHERE side_effect IN {1}
 		GROUP BY side_effect, drug_short_name'''.format(indication_single_term, side_effect_tuple)
@@ -66,35 +66,34 @@ def get_side_effect_probabilities(side_effect_tuple, indication_single_term, con
 	
 
 
-def get_side_effect_probs_by_single_drug(side_effect_tuple, indication_single_term, drug, conn):
+def get_side_effect_probs_for_single_drug(indication_single_term, drug, conn):
 	query_string = '''
-		SELECT side_effect, SUM(side_effect_count/patient_count) AS effect_proportion
+		SELECT drug_short_name, side_effect, (side_effect_count/patient_count) AS effect_proportion
 		FROM {0}_props
-		WHERE side_effect IN {1}
-		AND drug_short_name = "{2}"
-		GROUP BY side_effect, drug_short_name'''.format(indication_single_term, side_effect_tuple, drug)
+		WHERE drug_short_name = "{1}"
+		GROUP BY side_effect
+		ORDER BY effect_proportion DESC
+		LIMIT 10'''.format(indication_single_term, drug)
 	result_df = pd.io.sql.frame_query(query_string, conn)
 	return result_df
 
 
 
 
+def get_side_effect_probs_for_multi_drug(indication_single_term, drug_tuple, conn):
+	result_df = pd.DataFrame()
+	for drug in drug_tuple:
+		query_string = '''
+			SELECT ds.drug_short_name
+			FROM drugs d
+			JOIN drugs_short ds
+				ON d.drug_short_id = ds.drug_short_id
+			WHERE d.medicinalproduct = "{0}"
+			LIMIT 1'''.format(drug)
+		drug = pd.io.sql.frame_query(query_string, conn).ix[0][0]
+		current_drug_effects = get_side_effect_probs_for_single_drug(indication_single_term, drug, conn)
+		result_df = result_df.append(current_drug_effects)
+	return result_df
 
-
-
-def plot_single_effect(pd_slice):
-	'''Expects pandas data slice of side effects and drug name'''
-	fig=plt.figure();
-	pd_slice.plot(kind='bar')
-	plt.axhline(0, color='k')
-	plt.xlabel('side effect')
-	plt.ylabel('proportion of reported cases')
-	plt.xticks(rotation=45)
-	plt.title(pd_slice.name, color='black')
-	fig.autofmt_xdate(rotation=45, ha='right')
-	img = StringIO()
-	fig.savefig(img)
-	img.seek(0)
-	return img
 
 

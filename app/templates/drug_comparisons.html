@@ -1,16 +1,6 @@
 {% extends "layout/base.html" %}
 
 
-<script>
- 
-
-
-
-
-{% block content %}
-
-
-
 <script type="text/javascript" src="{{ url_for('static', filename='vendor/jquery/dist/jquery.min.js') }}"></script>
 
 <!-- 	BOOTSTRAP SELECT CSS -->
@@ -20,6 +10,7 @@
 <!-- 	BOOTSTRAP SELECT CSS -->
 <link rel="stylesheet" type="text/css" href="text/javascript" src="{{ url_for('static', filename='vendor/bootstrap/dist/css/bootstrap-select.css') }}">
 
+{% block content %}
 
 
 <script type="text/javascript">
@@ -29,35 +20,15 @@
 	  $('.nav a[href="'+ urlPath +'"]').parent().addClass('active');
   });
 </script>
-<script>
-$(function (){
-$('[data-toggle="modal"]')
-.popover({trigger: 'click', html: 'true', placement: "bottom"})
-.click(function(e) {e.preventDefault();});
-});
-</script>
-
-
-
-
-
-
-
-<script type="text/javascript">
-	$(window).on('load', function () {
-
-		$('.selectpicker').selectpicker({
-		});
-
-		$('.selectpicker').selectpicker('hide');
-	});
-</script>
-
 
 
   <div id="wrap">
     <div class="container">
       <div class="starter-template">
+
+	<div class="row">
+	<div class="col-xs-5 col-md-5 col-lg-5">
+
         <h1>RxFx</h1>
         <p class="lead"> Prescription Drug Side Effects </p>
         <p>Compare different Rx side effects</p>
@@ -90,18 +61,13 @@ $('[data-toggle="modal"]')
 
 	<!~~ Add the extra clearfix for only the required viewport ~~>
 	<div class="clearfix visible-xs"></div>
-	<div class="row"></div>
 
-	<div class="row">
-	<div class="col-xs-5 col-md-5 col-lg-5">
 
 
 
 	<!-- 	DRUG LIST		 -->
 		<div class="row">
-			<dt><p>Rx: {{ current_indication }} </p></dt>
-
-
+			
 
 			{% for i in range(0, (druglist|length), 3 ) %}
 				{% for j in range(0, 1) %}
@@ -111,7 +77,8 @@ $('[data-toggle="modal"]')
 							<div class="col-xs-4 col-md-4 col-lg-4">
 								<div class="checkbox">
 									<label>
-										<input type="checkbox" name="drugs_selected" value="{{ druglist[k] }}">
+										<input type="checkbox" name="drugs_selected" value="{{druglist[k]}}"
+										{% if druglist[k] in drug_selection %} checked {% endif %} >
 										{{ druglist[k] }}
 									</label>
 								</div>
@@ -120,7 +87,8 @@ $('[data-toggle="modal"]')
 							<div class="col-xs-4 col-md-4 col-lg-4">
 								<div class="checkbox">
 									<label>
-										<input type="checkbox" name="drugs_selected" value="{{ druglist[k+1] }}">
+										<input type="checkbox" name="drugs_selected" value="{{ druglist[k+1] }}"
+										{% if druglist[k+1] in drug_selection %} checked {% endif %}>
 										{{ druglist[k+1] }}
 									</label>
 								</div>
@@ -130,7 +98,8 @@ $('[data-toggle="modal"]')
 							<div class="col-xs-4 col-md-4 col-lg-4">
 								<div class="checkbox">
 									<label>
-										<input type="checkbox" name="drugs_selected" value="{{ druglist[k+2] }}">
+										<input type="checkbox" name="drugs_selected" value="{{ druglist[k+2] }}"
+										{% if druglist[k+2] in drug_selection %} checked {% endif %}>
 										{{ druglist[k+2] }}
 									</label>
 								</div>
@@ -140,45 +109,28 @@ $('[data-toggle="modal"]')
 					{% endif %}
 				{% endfor %}	
 			{% endfor %}	
-
-			<input type=submit value=Search>
+			{{drug_selection}}
 
 		</div>	
+	</div>
+	
+	
+	<div class="col-xs-7 col-md-7 col-lg-7">
+			
+		{% if (drug_selection|length) > 4 %} 
+		PLEASE LIMIT THE NUMBER OF DRUGS SELECTED TO 4
+		{% else %}
+			<!-- SINGLE PLOT FIGURE --> 
+			<img class="img-responsive img-rounded" 
+			src="{{ url_for('multi_effect_png', current_indication=current_indication, drug_selection=drug_selection) }}" style="margin-left:auto margin-right:auto" />
+		{% endif %}	
+		
+	</div>
+	
+	</div>
 	</form>
-	</div>
-	
-	
-	<div class="col-xs-5 col-md-5 col-lg-5"><dl>
-
-		FIGURE HERE
-	
-	</div>
-	
-	</div>
 
 
-
-
-	<!~~ Add the extra clearfix for only the required viewport ~~>
-	<div class="clearfix visible-xs"></div>
-
-
-
-
-
-
-	<select id="id_select" class="selectpicker" multiple data-live-search="true">
-		<option>cow</option>
-		<option>bull</option>
-		<option>ASD</option>
-		<option>Bla</option>
-		<option>Ble</option>
-	</select>
-
-
-
-
-	
 	
     </div>
   </div>
