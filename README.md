@@ -2,7 +2,7 @@
 # RxFx
 
 ### Introduction
-RxFx was based on a basic [Flask](http://flask.pocoo.org/) template created specifically to help budding
+RxFx was based on a basic [Flask](http://flask.pocoo.org/) template (insightfl) created specifically to help budding
 data scientists in the [Insight Data Science](http://insightdatascience.com/) program get their web applications
 off the ground quickly. 
 
