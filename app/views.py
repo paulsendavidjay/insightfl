@@ -129,7 +129,7 @@ def single_effect_png(data_string):
 	#print values, indices
 	fig=plt.figure();
 	#single_effect_plot_data.plot(kind='bar')
-	plt.bar(range(0,len(indices)), values, align='center', color='chartreuse') # test plot
+	plt.bar(range(0,len(indices)), values, align='center', color='blue') # test plot
 	plt.axhline(0, color='k')
 	plt.ylabel('proportion of reported cases', fontsize=16)
 	plt.xticks(range(0,len(indices)), indices, rotation=45)
@@ -215,17 +215,20 @@ def multi_effect_png(current_indication, drug_selection):
 	col_names = ["","",""]#prob_table.columns.values
 	ylimit = max(prob_df2['probability']+0.01)
 	break_list = list(np.arange(len(col_names)) + 1)
-	p = ggplot(prob_df2, aes(x='drug',weight='probability',fill="drug")) + \
-		geom_bar() + \
-		ylab("") + \
-		xlab("") + \
-		ylim(0,ylimit) +\
-		scale_x_continuous(breaks=break_list,labels=list(col_names)) +\
-		scale_y_continuous(breaks=(0.025,0.05,0.75,0.1), labels=("2.5%", "5.0%", "7.5%", "10%")) +\
-		facet_wrap('side_effect', ncol=2)
-
-	img2 = StringIO()
-	fig=p.draw()
+	try:
+		p = ggplot(prob_df2, aes(x='drug',weight='probability',fill="drug")) + \
+			geom_bar() + \
+			ylab("") + \
+			xlab("") + \
+			ylim(0,ylimit) +\
+			scale_x_continuous(breaks=break_list,labels=list(col_names)) +\
+			facet_wrap('side_effect', ncol=2)
+		
+		
+		img2 = StringIO()
+		fig=p.draw()
+	except RuntimeWarning:
+		pass	
 	fig.set_size_inches(6,10.5)
 	fig.savefig(img2, dpi=100)
 	ggsave(plot=p, filename="test.png")	

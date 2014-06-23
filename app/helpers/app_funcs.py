@@ -66,14 +66,14 @@ def get_side_effect_probabilities(indication_single_term, side_effect_tuple, con
 	
 
 
-def get_side_effect_probs_for_single_drug(indication_single_term, drug, conn):
+def get_side_effect_probs_for_single_drug(indication_single_term, drug_short_name, conn):
 	query_string = '''
 		SELECT drug_short_name, side_effect, (side_effect_count/patient_count) AS effect_proportion
 		FROM {0}_props
 		WHERE drug_short_name = "{1}"
 		GROUP BY side_effect
 		ORDER BY effect_proportion DESC
-		LIMIT 10'''.format(indication_single_term, drug)
+		LIMIT 10'''.format(indication_single_term, drug_short_name)
 	result_df = pd.io.sql.frame_query(query_string, conn)
 	return result_df
 
@@ -82,16 +82,8 @@ def get_side_effect_probs_for_single_drug(indication_single_term, drug, conn):
 
 def get_side_effect_probs_for_multi_drug(indication_single_term, drug_tuple, conn):
 	result_df = pd.DataFrame()
-	for drug in drug_tuple:
-		query_string = '''
-			SELECT ds.drug_short_name
-			FROM drugs d
-			JOIN drugs_short ds
-				ON d.drug_short_id = ds.drug_short_id
-			WHERE d.medicinalproduct = "{0}"
-			LIMIT 1'''.format(drug)
-		drug = pd.io.sql.frame_query(query_string, conn).ix[0][0]
-		current_drug_effects = get_side_effect_probs_for_single_drug(indication_single_term, drug, conn)
+	for drug_short_name in drug_tuple:
+		current_drug_effects = get_side_effect_probs_for_single_drug(indication_single_term, drug_short_name, conn)
 		result_df = result_df.append(current_drug_effects)
 	return result_df
 

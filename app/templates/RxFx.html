@@ -67,7 +67,7 @@ $('[data-toggle="modal"]')
 		
 
 
-		<!-- 		ROW FOR RECOMMENDATION -->
+				<!-- 	ROW FOR RECOMMENDATION -->
 				<div class="row">
 	
 
@@ -75,39 +75,9 @@ $('[data-toggle="modal"]')
 				
 						{% if not recommendation == "" %}
 						{{ recommendation }}
-							<button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#myModal">
-							Details
-							</button>
 						{% endif %}
 					</h3>
 			
-					<!-- Modal -->
-					<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-					  <div class="modal-dialog">
-						<div class="modal-content">
-						  <div class="modal-header">
-							<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-							<h4 class="modal-title" id="myModalLabel">{{ recommendation }}</h4>
-						  </div>
-						  <div class="modal-body">
-							<div class=container >
-								<div class="row">
-									<div class="col-md-3">
-									<!-- SINGLE PLOT FIGURE -->
-									<img class="img-responsive img-rounded" 
-									src="{{ url_for('single_effect_png', data_string=single_plot_data_json) }}" style="margin-left:auto margin-right:auto" />
-									</div>
-								</div>
-							</div>
-						  </div>
-	  
-						  <div class="modal-footer">
-							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-						  </div>
-						</div>
-					  </div>
-					</div>			
-					<!-- End Modal -->
 			
 			
 					<h4>
@@ -117,7 +87,8 @@ $('[data-toggle="modal"]')
 					{% endfor %}
 					</h4>
 
-			</div>   <!-- END ROWS FOR RECS AND ALTERNATIVES -->
+			</div>  
+			<!-- END ROWS FOR RECS AND ALTERNATIVES -->
 
 
 		
@@ -126,9 +97,42 @@ $('[data-toggle="modal"]')
 		<!-- 	END FIRST COLUMNS OF LARGE ROW -->
 
 			<div class="col-sm-5 col-md-5 col-lg-5">
-				<!-- SINGLE PLOT FIGURE -->
-				<img class="img-responsive img-rounded" 
-				src="{{ url_for('single_effect_png', data_string=single_plot_data_json) }}" style="margin-left:auto margin-right:auto" />
+
+				<!-- 	MODAL -->
+				{% if not recommendation == "" %}
+					<button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#myModal">
+					Details
+					</button>
+
+					<!-- SINGLE PLOT FIGURE -->
+					<img class="img-responsive img-rounded" 
+					src="{{ url_for('single_effect_png', data_string=single_plot_data_json) }}" style="margin-left:auto margin-right:auto" />
+				
+				{% endif %}
+
+				<!-- Modal -->
+				<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				  <div class="modal-dialog">
+					<div class="modal-content">
+					  <div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="myModalLabel">{{ recommendation }}</h4>
+					  </div>
+					  <!-- MODAL BODY -->
+					  <div class="modal-body">
+						<div class=container >
+
+						
+						</div>
+					  </div>
+
+					  <div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					  </div>
+					</div>
+				  </div>
+				</div>			
+				<!-- End Modal -->
 			</div>
 
 
@@ -188,7 +192,7 @@ $('[data-toggle="modal"]')
 </div>
 
 
-<img src="static/images/equipment_jarock.jpg" alt="Image Placeholder" height="800">
+<!-- <img src="static/images/equipment_jarock.jpg" alt="Image Placeholder" height="800"> -->
 
 
 {% endblock %}
