@@ -24,6 +24,17 @@
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
 
 
+<!-- FOR MODAL -->
+    <script type="text/javascript" src="{{ url_for('static', filename='vendor/jquery/dist/jquery.min.js') }}"></script>
+
+
+	<!-- FIELD CHOOSE -->
+    <script type="text/javascript" src="{{ url_for('static', filename='vendor/jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='vendor/fieldChooser/fieldChooser.min.js') }}"></script>
+	<link href="{{ url_for('static', filename='vendor/fieldChooser/demo/stylesheets/jquery-ui.css') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='vendor/fieldChooser/demo/stylesheets/style.css') }}" rel="stylesheet">
+
+
 
     <title>RxFx</title>
 
@@ -73,7 +84,7 @@
     <script type="text/javascript" src="{{ url_for('static', filename='vendor/jquery/dist/jquery.min.js') }}"></script>
  -->
 
-	<script>
+	<script type="text/javascript">
 	$(function (){
 	$('[data-toggle="modal"]')
 	.popover({trigger: 'click', html: 'true', placement: "bottom"})

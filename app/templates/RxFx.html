@@ -1,16 +1,21 @@
 {% extends "layout/base.html" %}
 
-<!-- FOR MODAL -->
-    <script type="text/javascript" src="{{ url_for('static', filename='vendor/jquery/dist/jquery.min.js') }}"></script>
+<!-- 
+FOR MODAL    <script type="text/javascript" src="{{ url_for('static', filename='vendor/jquery/dist/jquery.min.js') }}"></script>
+
+
+	FIELD CHOOSE    <script type="text/javascript" src="{{ url_for('static', filename='vendor/jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='vendor/fieldChooser/fieldChooser.min.js') }}"></script>
+ -->
+
 
 <script>
-$(function (){
-$('[data-toggle="modal"]')
-.popover({trigger: 'click', html: 'true', placement: "bottom"})
-.click(function(e) {e.preventDefault();});
-});
+	$(function (){
+	$('[data-toggle="modal"]')
+	.popover({trigger: 'click', html: 'true', placement: "bottom"})
+	.click(function(e) {e.preventDefault();});
+	});
 </script>
-
 
 
 {% block content %}
@@ -153,6 +158,7 @@ $('[data-toggle="modal"]')
 <div class=.container-fluid >
 	{% for i in range(0, n_effects, 3) %}
 	
+ 
 	<div class="row">
 		{% for j in range(0, 3) %}
 		{% set k=i+j %}
@@ -185,12 +191,42 @@ $('[data-toggle="modal"]')
 
 		{% endfor %}	
 	</div>
-	</form>
+
+	
+</form>
+
+
+
+<form>
+<div id="fieldChooser">
+<div id="sourceFields">
+	{% for i in range(0, (side_effect_names|length) ) %}
+		<div>{{ side_effect_names[i] }}</div>
+	{% endfor %}
+</div>
+<div id="destinationFields">
+
+</div>
+</div>
+</form>
+
 
     </div>
   </div>
 </div>
-
+<script type="text/javascript"> 
+	$(document).ready(function () {
+		var $sourceFields = $("#sourceFields");
+		var $destinationFields = $("#destinationFields");
+		var $chooser = $("#fieldChooser").fieldChooser(sourceFields, destinationFields);
+		
+		
+		$chooser.getSourceList();
+		$chooser.getDestinationList();
+		console.log($chooser.getDestinationList())		
+	});
+	
+</script>
 
 <!-- <img src="static/images/equipment_jarock.jpg" alt="Image Placeholder" height="800"> -->
 

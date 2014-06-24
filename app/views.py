@@ -85,6 +85,8 @@ def RxFx():
 				except:
 					pref_list.append(0)
 			
+			
+			
 			prob_df = get_side_effect_probabilities(str(indications_dict[indication]), tuple(side_effect_names), conn)
 			prob_table = pd.pivot_table(prob_df, 'effect_proportion', rows='side_effect', cols='drug_short_name')
 			prob_table = prob_table.fillna(0)
