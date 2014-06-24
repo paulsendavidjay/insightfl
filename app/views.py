@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from ggplot import *
 import os, pickle, ast
 from StringIO import StringIO
+import socket
 
 app.secret_key = os.urandom(24)
 
@@ -17,8 +18,8 @@ app.secret_key = os.urandom(24)
 def get_db():
 	'''Open new connection to db'''
 	if not hasattr(g, 'mysql_db'):
-		g.mysql_db = con_db(host='127.0.0.1',
-			port=3306, user='root', db='RxFx', passwd='')
+		g.mysql_db = con_db(host=app.config["DATABASE_HOST"],
+			port=app.config["DATABASE_PORT"], user=app.config["DATABASE_USER"], db=app.config["DATABASE_DB"], passwd=app.config["DATABASE_PASSWORD"])
 	return g.mysql_db
 
 
