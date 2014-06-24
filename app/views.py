@@ -65,6 +65,7 @@ def RxFx():
 			recommendation = ""
 			alternates = ""
 			single_plot_data_json=""
+		
 		elif request.method=='POST':
 			# handle processing information
 			indication = request.form['indication']

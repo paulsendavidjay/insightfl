@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <script type="text/javascript" src="/Users/dpaulsen/Documents/Professional/InsightDataScience/insight_project/insightfl/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="/Users/dpaulsen/Documents/Professional/InsightDataScience/insight_project/insightfl/app/static/vendor/bootstrap/dist/js/bootstrap-select.js"></script>
+    <link rel="stylesheet" type="text/css" href="/Users/dpaulsen/Documents/Professional/InsightDataScience/insight_project/insightfl/app/static/vendor/bootstrap/dist/css/bootstrap-select.css">
+
+    <!-- 3.0 -->
+    <link href="/Users/dpaulsen/Documents/Professional/InsightDataScience/insight_project/insightfl/css/bootstrap-multiselect.css" rel="stylesheet">
+    <link href="/Users/dpaulsen/Documents/Professional/InsightDataScience/insight_project/insightfl/css/bootstrap-3.1.1.min.css" rel="stylesheet">
+    <script src="/Users/dpaulsen/Documents/Professional/InsightDataScience/insight_project/insightfl/js/bootstrap-3.1.1.min.js"></script>
+
+
+<script type="text/javascript">
+	$(window).on('load', function () {
+
+		$('.selectpicker').selectpicker({
+			'selectedText': 'cat'
+		});
+
+		// $('.selectpicker').selectpicker('hide');
+	});
+</script>
+</head>
+
+
+
+<body>
+<!-- NEW  -->
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('#example37').multiselect({
+      onChange: function(option, checked) {
+        // Get selected options.
+        var selectedOptions = $('#example37 option:selected');
+ 
+        if (selectedOptions.length >= 4) {
+          // Disable all other checkboxes.
+          var nonSelectedOptions = $('#example37 option').filter(function() {
+            return !$(this).is(':selected');
+          });
+ 
+          var dropdown = $('#example37').siblings('.multiselect-container');
+          nonSelectedOptions.each(function() {
+            var input = $('input[value="' + $(this).val() + '"]');
+            input.prop('disabled', true);
+            input.parent('li').addClass('disabled');
+          });
+        }
+        else {
+          // Enable all checkboxes.
+          var dropdown = $('#example37').siblings('.multiselect-container');
+          $('#example37 option').each(function() {
+            var input = $('input[value="' + $(this).val() + '"]');
+            input.prop('disabled', false);
+            input.parent('li').addClass('disabled');
+          });
+        }
+      }
+    });
+  });
+</script>
+
+
+
+
+
+<select id="example37" class="btn-group" multiple data-live-search="true">
+	<option value="cheese">Cheese</option>
+	<option value="tomatoes">Tomatoes</option>
+	<option value="mozarella">Mozzarella</option>
+	<option value="mushrooms">Mushrooms</option>
+	<option value="pepperoni">Pepperoni</option>
+	<option value="onions">Onions</option>
+</select>
+
+
+
+<label for="id_select">LABEL</label>
+
+<select id="id_select" class="selectpicker" multiple data-live-search="true">
+	<option>cow</option>
+	<option>bull</option>
+	<option>ASD</option>
+	<option>Bla</option>
+	<option>Ble</option>
+</select>
+
+
+
+
+
+<div class="container">
+	<form class="form-horizontal" role="form">
+		<div class="form-group">
+			
+			 
+				
+				
+		  </div>
+	<form>
+</div>
+
+</body>
+</html>

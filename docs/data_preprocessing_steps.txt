@@ -7,3 +7,9 @@
  selected top 39 indications by that were not NULL and were not "unknown"
  
  operate with subjects that have fewer than 4 drugs listed (2,010,495)
+
+run make_prob_tables.py to create each table of drug_short_name, dise_effect, side_effect_count (number of side effects reported within indication with use of drug_short_name, patient_count (number of patients taking drug_short_name), and side_effect_prob (side_effect_count / patient_count)
+
+remove all side effects with probability of less than 2%
+
+
