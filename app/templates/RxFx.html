@@ -195,9 +195,9 @@ FOR MODAL    <script type="text/javascript" src="{{ url_for('static', filename='
 	
 </form>
 
+<div id="output"></div>
+<button onclick="$chooser.getDestinationList();">Find Recommendation</button>
 
-
-<form>
 <div id="fieldChooser">
 <div id="sourceFields">
 	{% for i in range(0, (side_effect_names|length) ) %}
@@ -208,7 +208,6 @@ FOR MODAL    <script type="text/javascript" src="{{ url_for('static', filename='
 
 </div>
 </div>
-</form>
 
 
     </div>
@@ -219,13 +218,11 @@ FOR MODAL    <script type="text/javascript" src="{{ url_for('static', filename='
 		var $sourceFields = $("#sourceFields");
 		var $destinationFields = $("#destinationFields");
 		var $chooser = $("#fieldChooser").fieldChooser(sourceFields, destinationFields);
-		
-		
-		$chooser.getSourceList();
-		$chooser.getDestinationList();
-		console.log($chooser.getDestinationList())		
 	});
 	
+	
+
+
 </script>
 
 <!-- <img src="static/images/equipment_jarock.jpg" alt="Image Placeholder" height="800"> -->
