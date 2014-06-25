@@ -10,7 +10,11 @@ import os, pickle, ast
 from StringIO import StringIO
 import socket
 
+
+
+
 app.secret_key = os.urandom(24)
+
 
 
 
@@ -31,119 +35,150 @@ def close_db(error):
 				g.mysql_db.close()
 
 
-
+@app.route('/testing', methods=['GET','POST'])
+def testing():
+		# Renders index.html.
+		ranked_side_effect_list=request.json
+		print ranked_side_effect_list["list"]
+		print session['indication']
+		return "one"
 
 
 # ROUTING/VIEW FUNCTIONS
-@app.route('/index')
-def index():
-		# Renders index.html.
-		return render_template('index.html')
-
-
 
 @app.route('/')
-@app.route('/RxFx', methods=['GET', 'POST'])
+@app.route('/RxFx', methods=['GET','POST'])
 def RxFx():
 		# Renders RxFx.html.
 		conn = get_db() 	# returns connection object
 		c = conn.cursor() # create cursor object
+		
+		indication = ''
 		# GET LIST OF INDICATIONS
 		query_string = '''
 			SELECT indication, indication_single_term 
 			FROM top_indications'''
-		indication_list = pd.io.sql.frame_query(query_string, conn).sort("indication")
+		indication_list = pd.io.sql.frame_query(query_string, conn).sort('indication')
 		indications = list(indication_list['indication'])
-		indications_single_term = list(indication_list['indication_single_term'])
 		
 		if request.method=='GET':
-			# handle ask for informaion
-			indication=""
-			slider_dict = {}
-			n_side_effects = 5
-			side_effect_names=[]
-			pref_list=n_side_effects*[0]
-			recommendation = ""
-			alternates = ""
-			single_plot_data_json=""
+			return render_template('RxFx.html', 
+				indication="ANXIETY",
+				indications = indications)
 		
 		elif request.method=='POST':
 			# handle processing information
-			indication = request.form['indication']
-			
-			#return indication
-			
-			# ENTER ALGORITHM FUNCTION HERE
-			n=request.form['n_side_effects']
-			
-			# GET TOP SIDE EFFECTS ASSOCIATED WITH DRUG
-			side_effect_names = first_n_effects(n, indications_dict[indication], conn)
+			session['indication'] = request.form['indication']
+			side_effect_names = first_n_effects(15, indications_dict[session['indication']], conn)
+			return render_template('RxFx_effect_fields.html', 
+				indication=session['indication'],
+				indications = indications,
+				side_effect_names=side_effect_names)			
 
-			pref_list=[]
-			# THIS IS JUST FOR KEEPING THE SAME VALUES
-			for i in side_effect_names:
-				try:
-					pref_list.append(int(request.form[i]))
-				except:
-					pref_list.append(0)
 			
-			
-			
-			prob_df = get_side_effect_probabilities(str(indications_dict[indication]), tuple(side_effect_names), conn)
-			prob_table = pd.pivot_table(prob_df, 'effect_proportion', rows='side_effect', cols='drug_short_name')
-			prob_table = prob_table.fillna(0)
-			
-			dot_product = np.dot(pref_list, prob_table)
-			drug_short_names = list(prob_table.columns.values)
-			
-			score_df = pd.DataFrame(dot_product, index=drug_short_names, columns=['score'])
-			score_df=score_df.sort_index(by=['score'])
-			recommendation = score_df.iloc[0].name
-			alternates = score_df.index[1:4]
-			
-			single_plot_data_json = pd.DataFrame(prob_table.iloc[:][recommendation]).to_json()
-			
-		return render_template('RxFx.html', 
-			indication=indication,
-			side_effect_names=side_effect_names,
-			n_effects=len(side_effect_names), 
-			pref_list=pref_list,
-			recommendation=recommendation,
-			alternates=alternates,
+		return render_template('RxFx_effect_fields.html', 
+			indication=session['indication'],
 			indications = indications,
-			indications_single_term = indications_single_term,
-			single_plot_data_json = single_plot_data_json
-			)
+			side_effect_names=side_effect_names)
+
+
+@app.route('/RxFx_effect_fields', methods=['GET', 'POST'])
+def RxFx_effect_fields(indication,indications):
+	# Renders RxFx.html.
+	conn = get_db() 	# returns connection object
+	c = conn.cursor() # create cursor object
+
+	if request.method=='GET':
+		
+		# GET TOP SIDE EFFECTS ASSOCIATED WITH INDICATION
+		side_effect_names = first_n_effects(15, indications_dict["ANXIETY"], conn)
+		side_effect_names = ["nuts"]
+
+		return render_template('RxFx_effect_fields.html',
+			side_effect_names=side_effect_names)
+	
+	elif request.method=='POST':
+		
+		# GET TOP SIDE EFFECTS ASSOCIATED WITH DRUG
+		side_effect_names = first_n_effects(15, indications_dict[indication], conn)
+
+		prob_df = get_side_effect_probabilities(str(indications_dict[indication]), tuple(side_effect_names), conn)
+		prob_table = pd.pivot_table(prob_df, 'effect_proportion', rows='side_effect', cols='drug_short_name')
+		prob_table = prob_table.fillna(0)
+		
+		dot_product = np.dot(pref_list, prob_table)
+		drug_short_names = list(prob_table.columns.values)
+		
+		score_df = pd.DataFrame(dot_product, index=drug_short_names, columns=['score'])
+		score_df=score_df.sort_index(by=['score'])
+		recommendation = score_df.iloc[0].name
+		alternates = score_df.index[1:4]
+		
+	return render_template('RxFx_effect_fields.html',
+		indication=indication,
+		indications=indications,
+		side_effect_names=side_effect_names)
+
+
+
+@app.route('/RxFx_recommendation', methods=['GET', 'POST'])
+def RxFx_recommendation():
+	ranked_side_effect_list=request.json
+	print ranked_side_effect_list["list"]
+	ranked_side_effect_list = [x.encode('UTF8') for x in ranked_side_effect_list]
+	ranks = range(1, len(ranked_side_effect_list))
+	ranks = [1.0/x for x in ranks]
+	# GET PROBABILITIES OF SIDE EFFECTS
+	prob_df = get_side_effect_probabilities(str(indications_dict[indication]), tuple(ranked_side_effect_list), conn)
+	
+
+
+	print session['indication']
+	return '<div class="thisguy" ></div>'
+	return render_template('RxFx_recommendation.html',
+		ranked_side_effect_list = ranked_side_effect_list,
+		current_indication = session['indication'])
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 # ROUTING/VIEW FUNCTIONS
 
 
-@app.route('/single_effect_png/<data_string>', methods=['GET','POST'])
-def single_effect_png(data_string):
-	'''Expects pandas data slice of side effects and drug name'''	
-	single_effect_plot_data = pd.read_json(data_string)
-	drug_name = str(single_effect_plot_data.columns.values[0])
-	single_effect_plot_data=single_effect_plot_data.sort(drug_name, ascending=False)
+# @app.route('/single_effect_png/<data_string>', methods=['GET','POST'])
+# def single_effect_png(data_string):
+# 	'''Expects pandas data slice of side effects and drug name'''	
+# 	single_effect_plot_data = pd.read_json(data_string)
+# 	drug_name = str(single_effect_plot_data.columns.values[0])
+# 	single_effect_plot_data=single_effect_plot_data.sort(drug_name, ascending=False)
 	
-	print "SINGLE EFFECT PNG: single_effect_plot_data", drug_name
-	values = list(single_effect_plot_data.ix[:,0])
-	indices = [x.encode('UTF8') for x in list(single_effect_plot_data.index)] 
-	#print values, indices
-	fig=plt.figure();
-	#single_effect_plot_data.plot(kind='bar')
-	plt.bar(range(0,len(indices)), values, align='center', color='blue') # test plot
-	plt.axhline(0, color='k')
-	plt.ylabel('proportion of reported cases', fontsize=16)
-	plt.xticks(range(0,len(indices)), indices, rotation=45)
-	plt.title(drug_name, color='black', fontsize=20)
-	fig.autofmt_xdate(ha='right')
+# 	print "SINGLE EFFECT PNG: single_effect_plot_data", drug_name
+# 	values = list(single_effect_plot_data.ix[:,0])
+# 	indices = [x.encode('UTF8') for x in list(single_effect_plot_data.index)] 
+# 	#print values, indices
+# 	fig=plt.figure();
+# 	#single_effect_plot_data.plot(kind='bar')
+# 	plt.bar(range(0,len(indices)), values, align='center', color='blue') # test plot
+# 	plt.axhline(0, color='k')
+# 	plt.ylabel('proportion of reported cases', fontsize=16)
+# 	plt.xticks(range(0,len(indices)), indices, rotation=45)
+# 	plt.title(drug_name, color='black', fontsize=20)
+# 	fig.autofmt_xdate(ha='right')
 	
-	img = StringIO()
-	fig.savefig(img)
-	img.seek(0)
-	return send_file(img, mimetype='image/png')
+# 	img = StringIO()
+# 	fig.savefig(img)
+# 	img.seek(0)
+# 	return send_file(img, mimetype='image/png')
  
 
 
@@ -246,11 +281,6 @@ def multi_effect_png(current_indication, drug_selection):
 
 
 
-
-@app.route('/analytics')
-def analytics():
-		# Renders slides.html.
-		return render_template('analytics.html')
 
 
 

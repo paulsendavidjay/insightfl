@@ -6,9 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-<!-- 
-    <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
- -->
+
 
     <!-- 	BOOTSTRAP CORE CSS -->
     <link href="{{ url_for('static', filename='vendor/bootstrap/dist/css/bootstrap.min.css') }}" rel="stylesheet">
@@ -16,31 +14,37 @@
 <!-- 
     <link href="{{ url_for('static', filename='vendor/components-revealjs/css/reveal.min.css') }}" rel="stylesheet">
  -->
+
     <!-- 	PAGE SPECIFIC CSS FILES -->
     {% block head %}{% endblock %}
+
+
     <!-- 	GENERICONS CORE CSS -->
     <link href="{{ url_for('static', filename='vendor/Genericons/genericons.css') }}" rel="stylesheet">
     <!-- 	CUSTOM STYLE CSS -->
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
 
 
-<!-- FOR MODAL -->
+  <!-- MODAL -->
     <script type="text/javascript" src="{{ url_for('static', filename='vendor/jquery/dist/jquery.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='vendor/bootstrap/dist/js/bootstrap.min.js') }}"></script>
 
 
-	<!-- FIELD CHOOSE -->
-  <script type="text/javascript" src="{{ url_for('static', filename='vendor/jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.min.js') }}"></script>
-  <script type="text/javascript" src="{{ url_for('static', filename='vendor/fieldChooser/fieldChooser.min.js') }}"></script>
-	<link href="{{ url_for('static', filename='vendor/fieldChooser/demo/stylesheets/jquery-ui.css') }}" rel="stylesheet">
-	<link href="{{ url_for('static', filename='vendor/fieldChooser/demo/stylesheets/style.css') }}" rel="stylesheet">
+  	<!-- FIELD CHOOSE -->
+    <script type="text/javascript" src="{{ url_for('static', filename='vendor/jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='vendor/fieldChooser/fieldChooser.min.js') }}"></script>
+  	<link href="{{ url_for('static', filename='vendor/fieldChooser/demo/stylesheets/jquery-ui.css') }}" rel="stylesheet">
+  	<link href="{{ url_for('static', filename='vendor/fieldChooser/demo/stylesheets/style.css') }}" rel="stylesheet">
 
 
 
     <title>RxFx</title>
 
-
-
   </head>
+
+
+
+
 
   <body>
 
@@ -69,20 +73,10 @@
     <!-- Within the content block, wrap content with <div id="wrap"><div>
           when using the footer block to push the footer down. -->
     {% block content %}{% endblock %}
-
     <!-- The footer is placed within its own block to render properly -->
     {% block footer %}{% endblock %}
 
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
 
-    <script type="text/javascript" src="{{ url_for('static', filename='vendor/bootstrap/dist/js/bootstrap.min.js') }}"></script>
-
-<!-- DOES NOT LET MULTISELECT WORK, BUT IS NEEDED FOR MODAL; MOVING IT TO RXFX.HTML DOES FIX THE ISSUE -->
-<!-- 
-    <script type="text/javascript" src="{{ url_for('static', filename='vendor/jquery/dist/jquery.min.js') }}"></script>
- -->
 
 	<script type="text/javascript">
 	$(function (){
@@ -96,16 +90,16 @@
 
 
 	
-    <!-- Page specific script files -->
-    {% block scripts %}{% endblock %}
+  <!-- Page specific script files -->
+  {% block scripts %}{% endblock %}
 
-    <script type="text/javascript">
-      // Dynamically add the bootstrap 'active' class to navbar links.
-      $(document).ready(function($){
-        var urlPath = window.location.pathname.split('/')[1];
-          $('.nav a[href="'+ urlPath +'"]').parent().addClass('active');
-      });
-    </script>
+  <script type="text/javascript">
+    // Dynamically add the bootstrap 'active' class to navbar links.
+    $(document).ready(function($){
+      var urlPath = window.location.pathname.split('/')[1];
+        $('.nav a[href="'+ urlPath +'"]').parent().addClass('active');
+    });
+  </script>
 
   </body>
 </html>
