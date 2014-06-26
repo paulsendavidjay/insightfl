@@ -21,14 +21,15 @@ div#fieldChooser {
 
 .fc-field:hover {
     outline: #cacaca solid 1px;
+    background-color:   #FFFF99;
 }
 
 .fc-selected {
-    background-color: #1F7A99;
+    background-color: #94B8FF;*/
 }
 
 .fc-selected:hover {
-    background-color: #33CCFF;
+    background-color:   #FFFF99;*/
 }
 
 .fc-field-list {
