@@ -24,11 +24,11 @@ div#fieldChooser {
 }
 
 .fc-selected {
-    background-color: #ffe284;
+    background-color: #1F7A99;
 }
 
 .fc-selected:hover {
-    background-color: #ffd448;
+    background-color: #33CCFF;
 }
 
 .fc-field-list {

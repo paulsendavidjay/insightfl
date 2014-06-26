@@ -9,6 +9,7 @@ from ggplot import *
 import os, pickle, ast
 from StringIO import StringIO
 import socket
+import json
 
 
 
@@ -123,21 +124,32 @@ def RxFx_effect_fields(indication,indications):
 
 @app.route('/RxFx_recommendation', methods=['GET', 'POST'])
 def RxFx_recommendation():
-	ranked_side_effect_list=request.json
-	print ranked_side_effect_list["list"]
-	ranked_side_effect_list = [x.encode('UTF8') for x in ranked_side_effect_list]
-	ranks = range(1, len(ranked_side_effect_list))
-	ranks = [1.0/x for x in ranks]
-	# GET PROBABILITIES OF SIDE EFFECTS
-	prob_df = get_side_effect_probabilities(str(indications_dict[indication]), tuple(ranked_side_effect_list), conn)
+	# Renders RxFx.html.
+	conn = get_db() 	# returns connection object
+	c = conn.cursor() # create cursor object
 	
+	ranked_side_effect_list=request.json
+	ranked_side_effect_list = [x.encode('UTF8') for x in ranked_side_effect_list["list"]]
+	ranks = range(1, len(ranked_side_effect_list)+1)
+	ranks = [1.0/x for x in ranks]
+	
+	# GET PROBABILITIES OF SIDE EFFECTS
+	prob_df = get_side_effect_probabilities(str(indications_dict[session['indication']]), tuple(ranked_side_effect_list), conn)
+	prob_table = pd.pivot_table(prob_df, 'effect_proportion', rows='side_effect', cols='drug_short_name')
+	prob_table = prob_table.fillna(0)
+	
+	# GET SUM OF WEIGHTS X PROBABILITIES
+	dot_product = np.dot(ranks, prob_table)
+	drug_short_names = list(prob_table.columns.values)
 
-
-	print session['indication']
-	return '<div class="thisguy" ></div>'
-	return render_template('RxFx_recommendation.html',
-		ranked_side_effect_list = ranked_side_effect_list,
-		current_indication = session['indication'])
+	score_df = pd.DataFrame(dot_product, index=drug_short_names, columns=['score'])
+	score_df=score_df.sort_index(by=['score'])
+	recommendations = list(score_df.index)
+	rec_json = json.dumps(recommendations)
+	print recommendations
+	return rec_json	
+	# return render_template('RxFx_recommendation.html',
+	# 	recommendations = recommendations)
 
 
 
