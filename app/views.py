@@ -118,6 +118,7 @@ def RxFx_recommendation():
 	#conn = get_db() 	# returns connection object
 	#c = conn.cursor() # create cursor object
 	indication = request.args.get('indication')
+	indication = indication.encode('UTF8')
 	try:
 		ranked_side_effect_list_json=request.json
 		print ranked_side_effect_list_json
