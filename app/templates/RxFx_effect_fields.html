@@ -89,7 +89,7 @@ FOR MODAL    <script type="text/javascript" src="{{ url_for('static', filename='
 		        data: JSON.stringify({'list': foundFields}),
 		        dataType: 'json',
 		        success: function(result){
-		            // console.log(result);
+		            console.log(result);
 		        	
 		        	$("#firstrec").text(result[0]);
 		            $("#nextbest").html('<li>'+result[1]+'</li>');
@@ -100,7 +100,7 @@ FOR MODAL    <script type="text/javascript" src="{{ url_for('static', filename='
 					$("#results").css('opacity', 1);
 		        }
 	    	});
-	    
+
 		} 
 		catch(err) {
 			console.log("ajax fail")
