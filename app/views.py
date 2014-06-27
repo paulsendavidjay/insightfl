@@ -59,6 +59,7 @@ def RxFx():
 		
 		elif request.method=='POST':
 			# handle processing information
+			session['indication'] = request.form['indication']
 			side_effect_names = first_n_effects(15, indications_dict[session['indication']], conn)
 			return render_template('RxFx_effect_fields.html', 
 				indication=session['indication'],
@@ -92,7 +93,7 @@ def RxFx_effect_fields(indication,indications):
 		# GET TOP SIDE EFFECTS ASSOCIATED WITH DRUG
 		side_effect_names = first_n_effects(15, indications_dict[indication], conn)
 
-		prob_df = get_side_effect_probabilities(str(indications_dict[indication]), tuple(side_effect_names), conn)
+		prob_df = get_side_effect_probabilities(str(indication), tuple(side_effect_names), conn)
 		prob_table = pd.pivot_table(prob_df, 'effect_proportion', rows='side_effect', cols='drug_short_name')
 		prob_table = prob_table.fillna(0)
 		
@@ -117,6 +118,7 @@ def RxFx_recommendation():
 	
 	#conn = get_db() 	# returns connection object
 	#c = conn.cursor() # create cursor object
+	indication = request.args.get('indication')
 	try:
 		ranked_side_effect_list_json=request.json
 		print ranked_side_effect_list_json
@@ -126,7 +128,7 @@ def RxFx_recommendation():
 		ranks = [1.0/x for x in ranks]
 		
 		# GET PROBABILITIES OF SIDE EFFECTS
-		prob_df = get_side_effect_probabilities(str(indications_dict[session['indication']]), tuple(ranked_side_effect_list), conn)
+		prob_df = get_side_effect_probabilities(str(indication), tuple(ranked_side_effect_list), conn)
 		prob_table = pd.pivot_table(prob_df, 'effect_proportion', rows='side_effect', cols='drug_short_name')
 		prob_table = prob_table.fillna(0)
 		
@@ -194,51 +196,51 @@ def RxFx_recommendation():
 
 
 
-@app.route('/drug_comparisons', methods=['GET', 'POST'])
-def drug_comparisons():
-		#conn = get_db() 	# returns connection object
-		#c = conn.cursor() # create cursor object
+# @app.route('/drug_comparisons', methods=['GET', 'POST'])
+# def drug_comparisons():
+# 		#conn = get_db() 	# returns connection object
+# 		#c = conn.cursor() # create cursor object
 		
-		query_string = '''
-			SELECT indication, indication_single_term 
-			FROM top_indications'''
-		indication_list = pd.io.sql.frame_query(query_string, conn).sort("indication")
-		indications = list(indication_list['indication'])
-		indications_single_term = list(indication_list['indication_single_term'])
-		druglist=""
-		if request.method=='GET':
-			query_string = '''
-				SELECT drug_short_name
-				FROM drugs_by_indication_short
-				WHERE drugindication = "{0}"'''.format(indications[0])
-			druglist = list(pd.io.sql.frame_query(query_string, conn).sort("drug_short_name").ix[:,0])
+# 		query_string = '''
+# 			SELECT indication, indication_single_term 
+# 			FROM top_indications'''
+# 		indication_list = pd.io.sql.frame_query(query_string, conn).sort("indication")
+# 		indications = list(indication_list['indication'])
+# 		indications_single_term = list(indication_list['indication_single_term'])
+# 		druglist=""
+# 		if request.method=='GET':
+# 			query_string = '''
+# 				SELECT drug_short_name
+# 				FROM drugs_by_indication_short
+# 				WHERE drugindication = "{0}"'''.format(indications[0])
+# 			druglist = list(pd.io.sql.frame_query(query_string, conn).sort("drug_short_name").ix[:,0])
 			
-			current_indication=indications[0]
-			drug_selection=[]
+# 			current_indication=indications[0]
+# 			drug_selection=[]
 		
-		elif request.method=='POST':
-			druglist=""
-			current_indication = request.form['indication']
-			query_string = '''
-			SELECT drug_short_name
-			FROM drugs_by_indication_short
-			WHERE drugindication = "{0}"'''.format(current_indication)
-			druglist = list(pd.io.sql.frame_query(query_string, conn).sort("drug_short_name").ix[:,0])
+# 		elif request.method=='POST':
+# 			druglist=""
+# 			current_indication = request.form['indication']
+# 			query_string = '''
+# 			SELECT drug_short_name
+# 			FROM drugs_by_indication_short
+# 			WHERE drugindication = "{0}"'''.format(current_indication)
+# 			druglist = list(pd.io.sql.frame_query(query_string, conn).sort("drug_short_name").ix[:,0])
 			 
-			drug_selection = request.form.getlist('drugs_selected') 
-			drug_selection = [x.encode('UTF8') for x in drug_selection]
+# 			drug_selection = request.form.getlist('drugs_selected') 
+# 			drug_selection = [x.encode('UTF8') for x in drug_selection]
 			
-			#current_Rx_list = request.form['Rx']
-			#print current_Rx_list
+# 			#current_Rx_list = request.form['Rx']
+# 			#print current_Rx_list
 		
-		print drug_selection
-		return render_template('drug_comparisons.html',
-			indications = indications,
-			indications_single_term = indications_single_term,
-			druglist = druglist, 
-			current_indication = current_indication,
-			drug_selection = drug_selection
-			)
+# 		print drug_selection
+# 		return render_template('drug_comparisons.html',
+# 			indications = indications,
+# 			indications_single_term = indications_single_term,
+# 			druglist = druglist, 
+# 			current_indication = current_indication,
+# 			drug_selection = drug_selection
+# 			)
 
 
 
@@ -246,42 +248,42 @@ def drug_comparisons():
 
 
 
-@app.route('/multi_effect_png/<current_indication>/<drug_selection>', methods=['GET','POST'])
-def multi_effect_png(current_indication, drug_selection):
-	'''Expects pandas data slice of side effects and drug name'''	
-	#conn = get_db() 	# returns connection object
+# @app.route('/multi_effect_png/<current_indication>/<drug_selection>', methods=['GET','POST'])
+# def multi_effect_png(current_indication, drug_selection):
+# 	'''Expects pandas data slice of side effects and drug name'''	
+# 	#conn = get_db() 	# returns connection object
 	
-	#drug_selection = ast.literal_eval(drug_selection)
+# 	#drug_selection = ast.literal_eval(drug_selection)
 	
-	prob_df = get_side_effect_probs_for_multi_drug(current_indication, tuple(drug_selection), conn)
+# 	prob_df = get_side_effect_probs_for_multi_drug(current_indication, tuple(drug_selection), conn)
 	
-	prob_table = pd.pivot_table(prob_df, 'effect_proportion', rows='side_effect', cols='drug_short_name')
-	prob_table = prob_table.fillna(0.00001)
-	prob_df2 = prob_table.stack().reset_index()
-	prob_df2.columns=['side_effect','drug','probability']
+# 	prob_table = pd.pivot_table(prob_df, 'effect_proportion', rows='side_effect', cols='drug_short_name')
+# 	prob_table = prob_table.fillna(0.00001)
+# 	prob_df2 = prob_table.stack().reset_index()
+# 	prob_df2.columns=['side_effect','drug','probability']
 	
-	col_names = ["","",""]#prob_table.columns.values
-	ylimit = max(prob_df2['probability']+0.01)
-	break_list = list(np.arange(len(col_names)) + 1)
-	try:
-		p = ggplot(prob_df2, aes(x='drug',weight='probability',fill="drug")) + \
-			geom_bar() + \
-			ylab("") + \
-			xlab("") + \
-			ylim(0,ylimit) +\
-			scale_x_continuous(breaks=break_list,labels=list(col_names)) +\
-			facet_wrap('side_effect', ncol=2)
+# 	col_names = ["","",""]#prob_table.columns.values
+# 	ylimit = max(prob_df2['probability']+0.01)
+# 	break_list = list(np.arange(len(col_names)) + 1)
+# 	try:
+# 		p = ggplot(prob_df2, aes(x='drug',weight='probability',fill="drug")) + \
+# 			geom_bar() + \
+# 			ylab("") + \
+# 			xlab("") + \
+# 			ylim(0,ylimit) +\
+# 			scale_x_continuous(breaks=break_list,labels=list(col_names)) +\
+# 			facet_wrap('side_effect', ncol=2)
 		
 		
-		img2 = StringIO()
-		fig=p.draw()
-	except RuntimeWarning:
-		pass	
-	fig.set_size_inches(6,10.5)
-	fig.savefig(img2, dpi=100)
-	ggsave(plot=p, filename="test.png")	
-	img2.seek(0)
-	return send_file(img2, mimetype='image/png')
+# 		img2 = StringIO()
+# 		fig=p.draw()
+# 	except RuntimeWarning:
+# 		pass	
+# 	fig.set_size_inches(6,10.5)
+# 	fig.savefig(img2, dpi=100)
+# 	ggsave(plot=p, filename="test.png")	
+# 	img2.seek(0)
+# 	return send_file(img2, mimetype='image/png')
 
 
 
