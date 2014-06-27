@@ -16,7 +16,12 @@
  -->
 
     <!-- 	PAGE SPECIFIC CSS FILES -->
-    {% block head %}{% endblock %}
+    {% block head %}
+
+
+
+
+    {% endblock %}
 
 
     <!-- 	GENERICONS CORE CSS -->
@@ -36,9 +41,16 @@
   	<link href="{{ url_for('static', filename='vendor/fieldChooser/demo/stylesheets/jquery-ui.css') }}" rel="stylesheet">
   	<link href="{{ url_for('static', filename='vendor/fieldChooser/demo/stylesheets/style.css') }}" rel="stylesheet">
 
+<style>
+body {
+  margin: 0;
+  background-image: url( "{{ url_for( 'static', filename='images/pills.jpg') }}");
+  background-size:cover;
+  /*background-repeat: no-repeat;*/
+}
+</style>
 
-
-    <title>RxFx</title>
+  <title>RxFx</title>
 
   </head>
 

@@ -2,9 +2,15 @@
 
 /* Sticky footer styles
 -------------------------------------------------- */
+
+html {
+	min-height: 100%;
+}
+
 body {
 	overflow-y: scroll;
 	padding-top: 70px;
+	min-height: 100%;
 }
 
 
