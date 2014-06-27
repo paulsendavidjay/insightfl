@@ -76,35 +76,30 @@ FOR MODAL    <script type="text/javascript" src="{{ url_for('static', filename='
 		for ( var i = 0; i < destinationFields.children.length; i++ ) {
   			foundFields.push($("#destinationFields").children()[i].innerText)
 		}
-		// console.log(foundFields)
 
 
 		// SEND TO VIEWS.PY
-	    try {
-    
-			$.ajax({
-		        type: 'POST',
-		        url: '/RxFx_recommendation?indication={{indication}}',
-		        contentType: 'application/json',
-		        data: JSON.stringify({'list': foundFields}),
-		        dataType: 'json',
-		        success: function(result){
-		            console.log(result);
-		        	
-		        	$("#firstrec").text(result[0]);
-		            $("#nextbest").html('<li>'+result[1]+'</li>');
-		            for (i=2; i<4; i++) {
-		            	$("#nextbest").append('<li>'+result[i]+'</li>');
-		            }
+		$.ajax({
+	        type: 'POST',
+	        url: '/RxFx_recommendation?indication={{indication}}',
+	        contentType: 'application/json',
+	        data: JSON.stringify({'list': foundFields}),
+	        dataType: 'json',
+	        success: function(result){
+	            /*console.log(result);*/
+	        	
+	        	$("#firstrec").text(result[0]);
+	            $("#nextbest").html('<li>'+result[1]+'</li>');
+	            for (i=2; i<4; i++) {
+	            	$("#nextbest").append('<li>'+result[i]+'</li>');
+	            }
 
-					$("#results").css('opacity', 1);
-		        }
-	    	});
+				$("#results").css('opacity', 1);
+	        }
+    	});
 
-		} 
-		catch(err) {
-			console.log("ajax fail")
-		}
+
+
 	};
 
 </script>
@@ -126,12 +121,6 @@ FOR MODAL    <script type="text/javascript" src="{{ url_for('static', filename='
 	<p>Select the side effects you want to avoid (at least 2): Drag from left to right and arrange in order of importance.</p>
 </div>
 
-
-
-<!-- <div class="container">
-	<table style="float:left;width:740px;text-align:center"><tbody><tr><td>dfha </td><td>two</td></tr></tbody>
-	</table>
-</div> -->
 
 <div class="container">
 	<div style="width:740px">

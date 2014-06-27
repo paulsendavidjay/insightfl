@@ -5,15 +5,14 @@ from app.helpers.app_funcs import *
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from ggplot import *
+#from ggplot import *
 import os, pickle, ast
 from StringIO import StringIO
 import socket
 import json, urllib
-#from pickle import load, close
+from pickle import load, close
 
-#indications_dict = pickle.load( open( "app/helpers/indications_dict.p", "rb" ) )
-indications_dict={'PERITONEAL DIALYSIS': 'peritoneal_dialysis', 'ANXIETY': 'anxiety', 'PAIN': 'pain', "CROHN'S DISEASE": 'chrohns_disease', 'ATRIAL FIBRILLATION': 'atrial_fibrillation', 'BACK PAIN': 'back_pain', 'BIPOLAR DISORDER': 'bipolar_disorder', 'NON-SMALL CELL LUNG CANCER': 'non_small_cell_lung_cancer', 'DIABETES MELLITUS': 'diabetes_mellitus', 'PSORIATIC ARTHROPATHY': 'psoriatic_arthropathy', 'DEPRESSION': 'depression', 'OSTEOPOROSIS': 'osteoporosis', 'PSORIASIS': 'psoriasis', 'BLOOD CHOLESTEROL INCREASED': 'blood_cholesterol_increased', 'SMOKING CESSATION THERAPY': 'smoking_cessation_therapy', 'CONTRACEPTION': 'contraception', 'MIGRAINE': 'migraine', 'MULTIPLE MYELOMA': 'multiple_myeloma', 'SCHIZOPHRENIA': 'schizophrenia', 'HORMONE REPLACEMENT THERAPY': 'hormone_replacement_therapy', 'PREMEDICATION': 'premedication', 'GASTROOESOPHAGEAL REFLUX DISEASE': 'gastrooesophageal_reflux_disease', 'EPILEPSY': 'epilepsy', 'TYPE 2 DIABETES MELLITUS': 'type_2_diabetes_mellitus', 'PROPHYLAXIS': 'prophylaxis', 'INSOMNIA': 'insomnia', 'ATTENTION DEFICIT/HYPERACTIVITY DISORDER': 'adhd', 'CHRONIC OBSTRUCTIVE PULMONARY DISEASE': 'chronic_obstructive_pulminary_disease', 'HYPERTENSION': 'hypertension', 'DIABETES MELLITUS NON-INSULIN-DEPENDENT': 'diabetes_mellitus_non_insulin_dependent', 'HEPATITIS C': 'hepatitis_c', 'MULTIPLE SCLEROSIS': 'multiple_sclerosis', 'ASTHMA': 'asthma', 'ARTHRITIS': 'arthritis', 'HIV INFECTION': 'hiv_infection', 'PULMONARY ARTERIAL HYPERTENSION': 'pulmonary_arterial_hypertension', 'HYPOTHYROIDISM': 'hypothyroidism', 'BREAST CANCER': 'breast_cancer'}
+indications_dict = pickle.load( open( "app/helpers/indications_dict.p", "rb" ) )
 
 app.secret_key = os.urandom(24)
 
@@ -41,9 +40,6 @@ def testing():
 @app.route('/RxFx', methods=['GET','POST'])
 def RxFx():
 		# Renders RxFx.html.
-		#conn = get_db() 	# returns connection object
-		#c = conn.cursor() # create cursor object
-		
 		indication = ''
 		# GET LIST OF INDICATIONS
 		query_string = '''
@@ -75,9 +71,7 @@ def RxFx():
 
 @app.route('/RxFx_effect_fields', methods=['GET', 'POST'])
 def RxFx_effect_fields(indication,indications):
-	# Renders RxFx.html.
-	#conn = get_db() 	# returns connection object
-	#c = conn.cursor() # create cursor object
+	# Renders RxFx_effect_fields.html.
 	if request.method=='GET':
 		
 		# GET TOP SIDE EFFECTS ASSOCIATED WITH INDICATION
@@ -113,17 +107,12 @@ def RxFx_effect_fields(indication,indications):
 
 @app.route('/RxFx_recommendation', methods=['GET', 'POST'])
 def RxFx_recommendation():
-	# Renders RxFx.html.
-	
-	#conn = get_db() 	# returns connection object
-	#c = conn.cursor() # create cursor object
+	# Returns recommdation list to j.query
 	indication = urllib.unquote(request.args.get('indication'))
 	indication = indication.encode('UTF8')
 	try:
 		ranked_side_effect_list_json=request.json
-		print ranked_side_effect_list_json
 		ranked_side_effect_list = [x.encode('UTF8') for x in ranked_side_effect_list_json["list"]]
-		print ranked_side_effect_list
 		ranks = range(1, len(ranked_side_effect_list)+1)
 		ranks = [1.0/x for x in ranks]
 		
@@ -145,10 +134,8 @@ def RxFx_recommendation():
 		etype, value, tb = sys.exc_info()
 		import traceback
 		return '<br>\n'.join(traceback.format_exception(etype, value, tb))
-	#print recommendations
 	return rec_json	
-	# return render_template('RxFx_recommendation.html',
-	# 	recommendations = recommendations)
+
 
 
 
