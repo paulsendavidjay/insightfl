@@ -1,4 +1,4 @@
-from flask import render_template, request, Flask, make_response, session, send_file, urllib
+from flask import render_template, request, Flask, make_response, session, send_file
 from app import app, host, port, user, passwd, db
 from app.helpers.database import con_db
 from app.helpers.app_funcs import *
@@ -9,7 +9,7 @@ from ggplot import *
 import os, pickle, ast
 from StringIO import StringIO
 import socket
-import json
+import json, urllib
 #from pickle import load, close
 
 #indications_dict = pickle.load( open( "app/helpers/indications_dict.p", "rb" ) )
