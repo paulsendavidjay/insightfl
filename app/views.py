@@ -18,22 +18,11 @@ app.secret_key = os.urandom(24)
 
 
 
-
-# PROVIDE A CONNECTION OBJECT ONLY IF ONE IS NOT ALREADY CONNECTED
-def get_db():
-	'''Open new connection to db'''
-	if not hasattr(g, 'mysql_db'):
-		g.mysql_db = con_db(host=app.config["DATABASE_HOST"],
-			port=app.config["DATABASE_PORT"], user=app.config["DATABASE_USER"], db=app.config["DATABASE_DB"], passwd=app.config["DATABASE_PASSWORD"])
-	return g.mysql_db
-
-
-
-@app.teardown_appcontext
-def close_db(error):
-		"""Closes the database again at the end of the request."""
-		if hasattr(g, 'mysql_db'):
-				g.mysql_db.close()
+conn = con_db(host=app.config["DATABASE_HOST"],
+			port=app.config["DATABASE_PORT"], 
+			user=app.config["DATABASE_USER"], 
+			db=app.config["DATABASE_DB"], 
+			passwd=app.config["DATABASE_PASSWORD"])
 
 
 @app.route('/testing', methods=['GET','POST'])
@@ -51,8 +40,8 @@ def testing():
 @app.route('/RxFx', methods=['GET','POST'])
 def RxFx():
 		# Renders RxFx.html.
-		conn = get_db() 	# returns connection object
-		c = conn.cursor() # create cursor object
+		#conn = get_db() 	# returns connection object
+		#c = conn.cursor() # create cursor object
 		
 		indication = ''
 		# GET LIST OF INDICATIONS
@@ -86,8 +75,8 @@ def RxFx():
 @app.route('/RxFx_effect_fields', methods=['GET', 'POST'])
 def RxFx_effect_fields(indication,indications):
 	# Renders RxFx.html.
-	conn = get_db() 	# returns connection object
-	c = conn.cursor() # create cursor object
+	#conn = get_db() 	# returns connection object
+	#c = conn.cursor() # create cursor object
 
 	if request.method=='GET':
 		
@@ -126,8 +115,8 @@ def RxFx_effect_fields(indication,indications):
 def RxFx_recommendation():
 	# Renders RxFx.html.
 	
-	conn = get_db() 	# returns connection object
-	c = conn.cursor() # create cursor object
+	#conn = get_db() 	# returns connection object
+	#c = conn.cursor() # create cursor object
 	
 	ranked_side_effect_list_json=request.json
 	print ranked_side_effect_list_json
@@ -202,8 +191,8 @@ def RxFx_recommendation():
 
 @app.route('/drug_comparisons', methods=['GET', 'POST'])
 def drug_comparisons():
-		conn = get_db() 	# returns connection object
-		c = conn.cursor() # create cursor object
+		#conn = get_db() 	# returns connection object
+		#c = conn.cursor() # create cursor object
 		
 		query_string = '''
 			SELECT indication, indication_single_term 
@@ -255,9 +244,9 @@ def drug_comparisons():
 @app.route('/multi_effect_png/<current_indication>/<drug_selection>', methods=['GET','POST'])
 def multi_effect_png(current_indication, drug_selection):
 	'''Expects pandas data slice of side effects and drug name'''	
-	conn = get_db() 	# returns connection object
+	#conn = get_db() 	# returns connection object
 	
-	drug_selection = ast.literal_eval(drug_selection)
+	#drug_selection = ast.literal_eval(drug_selection)
 	
 	prob_df = get_side_effect_probs_for_multi_drug(current_indication, tuple(drug_selection), conn)
 	
