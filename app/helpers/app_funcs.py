@@ -2,9 +2,6 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from StringIO import StringIO
-import pickle
-
-indications_dict = pickle.load( open( "app/helpers/indications_dict.p", "rb" ) )
 
 
 '''

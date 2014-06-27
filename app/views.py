@@ -10,9 +10,10 @@ import os, pickle, ast
 from StringIO import StringIO
 import socket
 import json
+#from pickle import load, close
 
-
-
+#indications_dict = pickle.load( open( "app/helpers/indications_dict.p", "rb" ) )
+indications_dict={'PERITONEAL DIALYSIS': 'peritoneal_dialysis', 'ANXIETY': 'anxiety', 'PAIN': 'pain', "CROHN'S DISEASE": 'chrohns_disease', 'ATRIAL FIBRILLATION': 'atrial_fibrillation', 'BACK PAIN': 'back_pain', 'BIPOLAR DISORDER': 'bipolar_disorder', 'NON-SMALL CELL LUNG CANCER': 'non_small_cell_lung_cancer', 'DIABETES MELLITUS': 'diabetes_mellitus', 'PSORIATIC ARTHROPATHY': 'psoriatic_arthropathy', 'DEPRESSION': 'depression', 'OSTEOPOROSIS': 'osteoporosis', 'PSORIASIS': 'psoriasis', 'BLOOD CHOLESTEROL INCREASED': 'blood_cholesterol_increased', 'SMOKING CESSATION THERAPY': 'smoking_cessation_therapy', 'CONTRACEPTION': 'contraception', 'MIGRAINE': 'migraine', 'MULTIPLE MYELOMA': 'multiple_myeloma', 'SCHIZOPHRENIA': 'schizophrenia', 'HORMONE REPLACEMENT THERAPY': 'hormone_replacement_therapy', 'PREMEDICATION': 'premedication', 'GASTROOESOPHAGEAL REFLUX DISEASE': 'gastrooesophageal_reflux_disease', 'EPILEPSY': 'epilepsy', 'TYPE 2 DIABETES MELLITUS': 'type_2_diabetes_mellitus', 'PROPHYLAXIS': 'prophylaxis', 'INSOMNIA': 'insomnia', 'ATTENTION DEFICIT/HYPERACTIVITY DISORDER': 'adhd', 'CHRONIC OBSTRUCTIVE PULMONARY DISEASE': 'chronic_obstructive_pulminary_disease', 'HYPERTENSION': 'hypertension', 'DIABETES MELLITUS NON-INSULIN-DEPENDENT': 'diabetes_mellitus_non_insulin_dependent', 'HEPATITIS C': 'hepatitis_c', 'MULTIPLE SCLEROSIS': 'multiple_sclerosis', 'ASTHMA': 'asthma', 'ARTHRITIS': 'arthritis', 'HIV INFECTION': 'hiv_infection', 'PULMONARY ARTERIAL HYPERTENSION': 'pulmonary_arterial_hypertension', 'HYPOTHYROIDISM': 'hypothyroidism', 'BREAST CANCER': 'breast_cancer'}
 
 app.secret_key = os.urandom(24)
 
