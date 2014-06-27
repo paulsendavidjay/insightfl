@@ -1,4 +1,4 @@
-from flask import render_template, request, Flask, make_response, session, send_file, g
+from flask import render_template, request, Flask, make_response, session, send_file, urllib
 from app import app, host, port, user, passwd, db
 from app.helpers.database import con_db
 from app.helpers.app_funcs import *
@@ -117,7 +117,7 @@ def RxFx_recommendation():
 	
 	#conn = get_db() 	# returns connection object
 	#c = conn.cursor() # create cursor object
-	indication = request.args.get('indication')
+	indication = urllib.unquote(request.args.get('indication'))
 	indication = indication.encode('UTF8')
 	try:
 		ranked_side_effect_list_json=request.json
@@ -128,7 +128,7 @@ def RxFx_recommendation():
 		ranks = [1.0/x for x in ranks]
 		
 		# GET PROBABILITIES OF SIDE EFFECTS
-		prob_df = get_side_effect_probabilities(str(indication), tuple(ranked_side_effect_list), conn)
+		prob_df = get_side_effect_probabilities(str(indications_dict[indication]), tuple(ranked_side_effect_list), conn)
 		prob_table = pd.pivot_table(prob_df, 'effect_proportion', rows='side_effect', cols='drug_short_name')
 		prob_table = prob_table.fillna(0)
 		
