@@ -118,27 +118,31 @@ def RxFx_recommendation():
 	
 	#conn = get_db() 	# returns connection object
 	#c = conn.cursor() # create cursor object
-	
-	ranked_side_effect_list_json=request.json
-	print ranked_side_effect_list_json
-	ranked_side_effect_list = [x.encode('UTF8') for x in ranked_side_effect_list_json["list"]]
-	print ranked_side_effect_list
-	ranks = range(1, len(ranked_side_effect_list)+1)
-	ranks = [1.0/x for x in ranks]
-	
-	# GET PROBABILITIES OF SIDE EFFECTS
-	prob_df = get_side_effect_probabilities(str(indications_dict[session['indication']]), tuple(ranked_side_effect_list), conn)
-	prob_table = pd.pivot_table(prob_df, 'effect_proportion', rows='side_effect', cols='drug_short_name')
-	prob_table = prob_table.fillna(0)
-	
-	# GET SUM OF WEIGHTS X PROBABILITIES
-	dot_product = np.dot(ranks, prob_table)
-	drug_short_names = list(prob_table.columns.values)
+	try:
+		ranked_side_effect_list_json=request.json
+		print ranked_side_effect_list_json
+		ranked_side_effect_list = [x.encode('UTF8') for x in ranked_side_effect_list_json["list"]]
+		print ranked_side_effect_list
+		ranks = range(1, len(ranked_side_effect_list)+1)
+		ranks = [1.0/x for x in ranks]
+		
+		# GET PROBABILITIES OF SIDE EFFECTS
+		prob_df = get_side_effect_probabilities(str(indications_dict[session['indication']]), tuple(ranked_side_effect_list), conn)
+		prob_table = pd.pivot_table(prob_df, 'effect_proportion', rows='side_effect', cols='drug_short_name')
+		prob_table = prob_table.fillna(0)
+		
+		# GET SUM OF WEIGHTS X PROBABILITIES
+		dot_product = np.dot(ranks, prob_table)
+		drug_short_names = list(prob_table.columns.values)
 
-	score_df = pd.DataFrame(dot_product, index=drug_short_names, columns=['score'])
-	score_df=score_df.sort_index(by=['score'])
-	recommendations = list(score_df.index)
-	rec_json = json.dumps(recommendations)
+		score_df = pd.DataFrame(dot_product, index=drug_short_names, columns=['score'])
+		score_df=score_df.sort_index(by=['score'])
+		recommendations = list(score_df.index)
+		rec_json = json.dumps(recommendations)
+	except:
+		etype, value, tb = sys.exc_info()
+		import traceback
+		return '<br>\n'.join(traceback.format_exception(etype, value, tb))
 	#print recommendations
 	return rec_json	
 	# return render_template('RxFx_recommendation.html',

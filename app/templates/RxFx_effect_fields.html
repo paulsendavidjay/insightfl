@@ -80,26 +80,30 @@ FOR MODAL    <script type="text/javascript" src="{{ url_for('static', filename='
 
 
 		// SEND TO VIEWS.PY
-	    $.ajax({
-	        type: 'POST',
-	        url: '/RxFx_recommendation',
-	        contentType: 'application/json',
-	        data: JSON.stringify({'list': foundFields}),
-	        dataType: 'json',
-	        success: function(result){
-	            // console.log(result);
-	        	
-	        	$("#firstrec").text(result[0]);
-	            $("#nextbest").html('<li>'+result[1]+'</li>');
-	            for (i=2; i<4; i++) {
-	            	$("#nextbest").append('<li>'+result[i]+'</li>');
-	            }
+	    try {
+    
+			$.ajax({
+		        type: 'POST',
+		        url: '/RxFx_recommendation',
+		        contentType: 'application/json',
+		        data: JSON.stringify({'list': foundFields}),
+		        dataType: 'json',
+		        success: function(result){
+		            // console.log(result);
+		        	
+		        	$("#firstrec").text(result[0]);
+		            $("#nextbest").html('<li>'+result[1]+'</li>');
+		            for (i=2; i<4; i++) {
+		            	$("#nextbest").append('<li>'+result[i]+'</li>');
+		            }
 
-				$("#results").css('opacity', 1);
-	        }
-    	});
-
-
+					$("#results").css('opacity', 1);
+		        }
+	    	});
+		} 
+		catch(err) {
+			console.log("ajax fail")
+		}
 	};
 
 </script>
