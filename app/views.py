@@ -59,7 +59,7 @@ def RxFx():
 		
 		elif request.method=='POST':
 			# handle processing information
-.			side_effect_names = first_n_effects(15, indications_dict[session['indication']], conn)
+			side_effect_names = first_n_effects(15, indications_dict[session['indication']], conn)
 			return render_template('RxFx_effect_fields.html', 
 				indication=session['indication'],
 				indications = indications,
