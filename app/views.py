@@ -140,6 +140,7 @@ def RxFx_recommendation():
 		recommendations = list(score_df.index)
 		rec_json = json.dumps(recommendations)
 	except:
+		import sys
 		etype, value, tb = sys.exc_info()
 		import traceback
 		return '<br>\n'.join(traceback.format_exception(etype, value, tb))
