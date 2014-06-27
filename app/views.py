@@ -125,11 +125,14 @@ def RxFx_effect_fields(indication,indications):
 @app.route('/RxFx_recommendation', methods=['GET', 'POST'])
 def RxFx_recommendation():
 	# Renders RxFx.html.
+	
 	conn = get_db() 	# returns connection object
 	c = conn.cursor() # create cursor object
 	
-	ranked_side_effect_list=request.json
-	ranked_side_effect_list = [x.encode('UTF8') for x in ranked_side_effect_list["list"]]
+	ranked_side_effect_list_json=request.json
+	print ranked_side_effect_list_json
+	ranked_side_effect_list = [x.encode('UTF8') for x in ranked_side_effect_list_json["list"]]
+	print ranked_side_effect_list
 	ranks = range(1, len(ranked_side_effect_list)+1)
 	ranks = [1.0/x for x in ranks]
 	
@@ -146,7 +149,7 @@ def RxFx_recommendation():
 	score_df=score_df.sort_index(by=['score'])
 	recommendations = list(score_df.index)
 	rec_json = json.dumps(recommendations)
-	print recommendations
+	#print recommendations
 	return rec_json	
 	# return render_template('RxFx_recommendation.html',
 	# 	recommendations = recommendations)
