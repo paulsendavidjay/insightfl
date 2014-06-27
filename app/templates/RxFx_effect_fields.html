@@ -84,7 +84,7 @@ FOR MODAL    <script type="text/javascript" src="{{ url_for('static', filename='
     
 			$.ajax({
 		        type: 'POST',
-		        url: '/RxFx_recommendation',
+		        url: '/RxFx_recommendation?indication={{indication}}',
 		        contentType: 'application/json',
 		        data: JSON.stringify({'list': foundFields}),
 		        dataType: 'json',

@@ -59,8 +59,7 @@ def RxFx():
 		
 		elif request.method=='POST':
 			# handle processing information
-			session['indication'] = request.form['indication']
-			side_effect_names = first_n_effects(15, indications_dict[session['indication']], conn)
+.			side_effect_names = first_n_effects(15, indications_dict[session['indication']], conn)
 			return render_template('RxFx_effect_fields.html', 
 				indication=session['indication'],
 				indications = indications,
@@ -78,7 +77,7 @@ def RxFx_effect_fields(indication,indications):
 	# Renders RxFx.html.
 	#conn = get_db() 	# returns connection object
 	#c = conn.cursor() # create cursor object
-
+	indication = request.args.get('indication')
 	if request.method=='GET':
 		
 		# GET TOP SIDE EFFECTS ASSOCIATED WITH INDICATION
