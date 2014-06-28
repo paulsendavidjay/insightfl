@@ -145,7 +145,7 @@ def multi_effect_probs():
 	drug_list = [x.encode('UTF8') for x in data_list_json["drugList"]]	
 	
 	# REMOVE RANKED ITEMS THAT DON'T APPEAR IN INDEX LIST
-	prob_df = get_side_effect_probs_for_multi_drug(indication, tuple(drug_list), tuple(ranked_side_effect_list), conn)
+	prob_df = get_side_effect_probs_for_multi_drug(str(indications_dict[indication]), tuple(drug_list), tuple(ranked_side_effect_list), conn)
 	ranked_side_effect_list_copy = list(ranked_side_effect_list)
 	indexSet = set(prob_df.loc[:]["side_effect"])
 	for i in ranked_side_effect_list_copy:
