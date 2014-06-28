@@ -6,7 +6,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from StringIO import StringIO
-from pickle import *
+import pickle 
 import os, pickle, ast, json, urllib, socket
 
 indications_dict = pickle.load( open( "app/helpers/indications_dict.p", "rb" ) )
