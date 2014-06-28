@@ -11,72 +11,69 @@ FOR MODAL    <script type="text/javascript" src="{{ url_for('static', filename='
 
 
 {% block content %}
+<script type="text/javascript" src="{{ url_for('static', filename='vendor/jongha-jquery-jsontotable/dist/jquery.jsontotable.min.js') }}"></script>
 
 
-
-
-
+<!-- PAGE HEADER -->
 <div class="container">
     <h1>RxFx</h1>
 	<p class="lead"> Prescription Drug Side Effects </p>
 	<h5>Get recommended Rx based on personalized tolerance/intolerance of side effects</h5>
 </div>
 
-
-
-
 		
 
-<!-- MODAL BUTTON-->
-<!-- <div class="container">
-	<button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#myModal">
-		Details
-	</button>
-</div> -->
 
 <!-- MODAL -->
-<!-- <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 		
 		<div class="modal-content">
 	  		
 	  		<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-				<h4 class="modal-title" id="myModalLabel">{{ recommendation }}</h4>
+				<h4 class="modal-title" id="myModalLabel">Percent Chance of Experiencing Side Effects</h4>
 	  		</div>
 		 
 			<div class="modal-body">
-				<div class=container >
-
-			
-				</div>
+					<div class="container">
+						<div id="jsontotableArr" class="jsontotable"></div>
+					</div>				
 			</div>
 	  		
 	  		<div class="modal-footer">
+				Side effect selections that are not associated with Rx recommendations are not displayed 
 				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 			</div>
 
 		</div>
   	</div>
-</div>			 -->
+</div>			
 <!-- End Modal -->
 
 
 
+<!-- SEND JQUERY FIELDCHOOSER DATA TO COLLECT RECOMMENDATION-->
 <script type="text/javascript"> 
 	$(document).ready(function () {
 		var $sourceFields = $("#sourceFields");
 		var $destinationFields = $("#destinationFields");
 		var $chooser = $("#fieldChooser").fieldChooser(sourceFields, destinationFields);
+	
+		var rankedSideEffects = [];
+		var resultList = [];
+		var drugList = [];
+		var jsontotableArr = [];
+
 	});
 	
-	var fetchDestinationFields = function() {
 
-		var foundFields = []
+	var fetchDestinationFields = function() {
+		var resultList = [];
+		var foundFields = [];
 		for ( var i = 0; i < destinationFields.children.length; i++ ) {
   			foundFields.push($("#destinationFields").children()[i].innerText)
 		}
-
 
 		// SEND TO VIEWS.PY
 		$.ajax({
@@ -93,18 +90,33 @@ FOR MODAL    <script type="text/javascript" src="{{ url_for('static', filename='
 	            for (i=2; i<4; i++) {
 	            	$("#nextbest").append('<li>'+result[i]+'</li>');
 	            }
-
 				$("#results").css('opacity', 1);
+				window.resultList = result.slice(0,4);	
+	        	
+	        }
+    		
+    	});
+		rankedSideEffects = foundFields;
+	};
+
+	var fetchProbTable = function() {
+		// SEND TO VIEWS.PY
+		$.ajax({
+	        type: 'POST',
+	        url: '/multi_effect_probs?indication={{indication}}',
+	        contentType: 'application/json',
+	        data: JSON.stringify({'drugList': window.resultList, 'rankedSideEffects' : rankedSideEffects}),
+	        dataType: 'json',
+	        success: function(result){	        	
+				var arr = result;
+				var input = JSON.stringify(arr);
+				$("#jsontotableArr" ).empty();
+			        $.jsontotable(arr, { id: "#jsontotableArr", header: true });
 	        }
     	});
-
-
-
 	};
 
 </script>
-
-
 
 
 <div id="results" class="container" style="opacity: 0;">
@@ -112,56 +124,42 @@ FOR MODAL    <script type="text/javascript" src="{{ url_for('static', filename='
 	<h5>Next best few: <ul id="nextbest"></ul></h5>
 </div>
 
-
 <!-- GET RECOMMENDATION BUTTON -->
 <div class="container">
-	<button onclick="fetchDestinationFields()"; style="background-color: #B2CCFF">Find Recommendation</button>
+	<button onclick="fetchDestinationFields()"; class="btn btn-primary btn-xs">Find Recommendation</button>
+	<button class="btn btn-primary btn-xs" onclick="fetchProbTable()" data-toggle="modal" data-target="#myModal">
+		Details</button>
 </div>
 <div id="directions" class="container">
 	<p>Select the side effects you want to avoid (at least 2): Drag from left to right and arrange in order of importance.</p>
 </div>
 
-
+<!-- BOX LABELS -->
 <div class="container">
 	<div style="width:740px">
 		<div style="width:350px;float:left; text-align:center;">
-
 			<h5>Common Side Effects</h5> 
 			Ranked in Order of Occurrence
 		</div>
-
 		<div style="width:350px;float:right; text-align:center;">
-
 			<h5>Effects to Avoid</h5> 
 			Rank in Order of Importance
 		</div>
-
-
 	</div>
-
-
 </div>
 
 
 <!-- FIELD CHOOSER FIELDS -->
 <div class="container">
-
-
 	<div id="fieldChooser">
-		
 		<div id="sourceFields">
 			{% for i in range(0, (side_effect_names|length) ) %}
 				<div>{{ side_effect_names[i] }}</div>
 			{% endfor %}
 		</div>
-
 		<div id="destinationFields">
-
 		</div>
-
-
 	</div>
-
 </div>
 
 

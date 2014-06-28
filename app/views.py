@@ -5,18 +5,13 @@ from app.helpers.app_funcs import *
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-#from ggplot import *
-import os, pickle, ast
 from StringIO import StringIO
-import socket
-import json, urllib
-from pickle import load, close
+from pickle import *
+import os, pickle, ast, json, urllib, socket
 
 indications_dict = pickle.load( open( "app/helpers/indications_dict.p", "rb" ) )
 
 app.secret_key = os.urandom(24)
-
-
 
 conn = con_db(host=app.config["DATABASE_HOST"],
 			port=app.config["DATABASE_PORT"], 
@@ -27,7 +22,7 @@ conn = con_db(host=app.config["DATABASE_HOST"],
 
 @app.route('/testing', methods=['GET','POST'])
 def testing():
-		# Renders index.html.
+		# Renders testing.html.
 		ranked_side_effect_list=request.json
 		print ranked_side_effect_list["list"]
 		print session['indication']
@@ -41,6 +36,7 @@ def testing():
 def RxFx():
 		# Renders RxFx.html.
 		indication = ''
+		
 		# GET LIST OF INDICATIONS
 		query_string = '''
 			SELECT indication, indication_single_term 
@@ -54,7 +50,7 @@ def RxFx():
 				indications = indications)
 		
 		elif request.method=='POST':
-			# handle processing information
+			# HANDLE PROCESSING INFORMATION
 			session['indication'] = request.form['indication']
 			side_effect_names = first_n_effects(15, indications_dict[session['indication']], conn)
 			return render_template('RxFx_effect_fields.html', 
@@ -62,7 +58,6 @@ def RxFx():
 				indications = indications,
 				side_effect_names=side_effect_names)			
 
-			
 		return render_template('RxFx_effect_fields.html', 
 			indication=session['indication'],
 			indications = indications,
@@ -137,6 +132,49 @@ def RxFx_recommendation():
 	return rec_json	
 
 
+
+@app.route('/multi_effect_probs', methods=['GET','POST'])
+def multi_effect_probs():
+	# Gets probabilities of side effects for different drugs
+	indication = urllib.unquote(request.args.get('indication'))
+	indication = indication.encode('UTF8')
+	data_list_json=request.json
+
+	# CONVERT FROM UNICODE
+	ranked_side_effect_list = [x.encode('UTF8') for x in data_list_json["rankedSideEffects"]]
+	drug_list = [x.encode('UTF8') for x in data_list_json["drugList"]]	
+	
+	# REMOVE RANKED ITEMS THAT DON'T APPEAR IN INDEX LIST
+	prob_df = get_side_effect_probs_for_multi_drug(indication, tuple(drug_list), tuple(ranked_side_effect_list), conn)
+	ranked_side_effect_list_copy = list(ranked_side_effect_list)
+	indexSet = set(prob_df.loc[:]["side_effect"])
+	for i in ranked_side_effect_list_copy:
+		if i not in indexSet: 
+			ranked_side_effect_list.remove(i)
+
+	# MANIPULATE TO GET VALUES FOR ALL DRUGS, ALL SIDE EFFECTS
+	prob_table = pd.pivot_table(prob_df, 'effect_proportion', rows='side_effect', cols='drug_short_name')
+	prob_table = prob_table.fillna(0)
+	prob_table = prob_table*100
+
+	# SELECT SIDE EFFECTS IN RANKED SIDE EFFECT LIST, ROUND, AND CONVERT TO STR
+	prob_table2 = prob_table.loc[ranked_side_effect_list,drug_list]
+	prob_table2 = np.round(prob_table2, decimals=1)
+	prob_table2 = prob_table2.astype(str)
+
+
+	# RESET INDEX TO PUT SIDE EFFECTS IN MATRIX WITH PROBABILITIES
+	prob_table3 = prob_table2.reset_index()
+
+	#BUILD ARRAY OF ARRAYS
+	header = list(prob_table2.columns.values)
+	header[:0]=["SIDE EFFECT"]
+	table_list = [header]
+	for i in range(len(prob_table3)):
+	    table_list.append(list(prob_table3.ix[i][:]))
+
+	table_json = json.dumps(table_list)
+	return table_json
 
 
 
@@ -235,42 +273,6 @@ def RxFx_recommendation():
 
 
 
-# @app.route('/multi_effect_png/<current_indication>/<drug_selection>', methods=['GET','POST'])
-# def multi_effect_png(current_indication, drug_selection):
-# 	'''Expects pandas data slice of side effects and drug name'''	
-# 	#conn = get_db() 	# returns connection object
-	
-# 	#drug_selection = ast.literal_eval(drug_selection)
-	
-# 	prob_df = get_side_effect_probs_for_multi_drug(current_indication, tuple(drug_selection), conn)
-	
-# 	prob_table = pd.pivot_table(prob_df, 'effect_proportion', rows='side_effect', cols='drug_short_name')
-# 	prob_table = prob_table.fillna(0.00001)
-# 	prob_df2 = prob_table.stack().reset_index()
-# 	prob_df2.columns=['side_effect','drug','probability']
-	
-# 	col_names = ["","",""]#prob_table.columns.values
-# 	ylimit = max(prob_df2['probability']+0.01)
-# 	break_list = list(np.arange(len(col_names)) + 1)
-# 	try:
-# 		p = ggplot(prob_df2, aes(x='drug',weight='probability',fill="drug")) + \
-# 			geom_bar() + \
-# 			ylab("") + \
-# 			xlab("") + \
-# 			ylim(0,ylimit) +\
-# 			scale_x_continuous(breaks=break_list,labels=list(col_names)) +\
-# 			facet_wrap('side_effect', ncol=2)
-		
-		
-# 		img2 = StringIO()
-# 		fig=p.draw()
-# 	except RuntimeWarning:
-# 		pass	
-# 	fig.set_size_inches(6,10.5)
-# 	fig.savefig(img2, dpi=100)
-# 	ggsave(plot=p, filename="test.png")	
-# 	img2.seek(0)
-# 	return send_file(img2, mimetype='image/png')
 
 
 

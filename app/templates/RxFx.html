@@ -1,30 +1,23 @@
 {% extends "layout/base.html" %}
 
-<!-- 
-FOR MODAL    <script type="text/javascript" src="{{ url_for('static', filename='vendor/jquery/dist/jquery.min.js') }}"></script>
-
-
-	FIELD CHOOSE    <script type="text/javascript" src="{{ url_for('static', filename='vendor/jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.min.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='vendor/fieldChooser/fieldChooser.min.js') }}"></script>
- -->
-
-
 
 {% block content %}
 
 
 <div class="container">
+    <!-- PAGE HEADER -->
     <h1>RxFx</h1>
 	<p class="lead"> Prescription Drug Side Effects </p>
-	<p>Get recommended Rx based on personalized tolerance/intolerance of side effects</p>
+	<h5>Get recommended Rx based on personalized tolerance/intolerance of side effects</h5>
 
 		<form method=post action="{{ url_for('RxFx') }}" >
 			<div class="container">
+
 				<!-- 	INDICATION DROPDOWN	ROW	 -->	
 				<div class="row">
 					<dt><center><p>What are you taking a prescription for?</p></dt></center>
 					<center><select name="indication">
-			
+
 						{% for i in range(0, (indications|length) ) %}
 							<option value="{{indications[i]}}" 
 								{% if indications[i] == indication %} selected {% endif %}
@@ -38,7 +31,6 @@ FOR MODAL    <script type="text/javascript" src="{{ url_for('static', filename='
 		</form>
 	</div>
 </div>
-
 
 
 

@@ -41,11 +41,11 @@ WITH THE DRUG, THEN BY THE SUM OF PROBABILITIES ACROSS DRUGS.
 '''
 def first_n_effects(n, indication_single_term, conn):
 	query_string = '''
-		SELECT side_effect, COUNT(side_effect) AS tot_effect_count, SUM(side_effect_count/patient_count) AS sum_effect_proportion
+		SELECT side_effect, COUNT(side_effect) AS tot_effect_count, SUM(side_effect_prob)/COUNT(side_effect_prob) AS mean_effect_proportion
 		FROM {0}_props
 		WHERE side_effect NOT IN ("DRUG INEFFECTIVE", "COMPLETED SUICIDE", "DRUG INTERACTION", "DEPRESSION")
 		GROUP BY side_effect
-		ORDER BY tot_effect_count DESC, sum_effect_proportion DESC
+		ORDER BY mean_effect_proportion DESC
 		LIMIT {1}'''.format(indication_single_term, n)
 	result_df = pd.io.sql.frame_query(query_string, conn)
 	result = list(result_df['side_effect'])
@@ -62,25 +62,24 @@ def get_side_effect_probabilities(indication_single_term, side_effect_tuple, con
 	return result_df
 	
 
-
-def get_side_effect_probs_for_single_drug(indication_single_term, drug_short_name, conn):
+def get_side_effect_probs_for_single_drug(indication_single_term, drug_short_name, side_effect_tuple, conn):
 	query_string = '''
 		SELECT drug_short_name, side_effect, (side_effect_count/patient_count) AS effect_proportion
 		FROM {0}_props
 		WHERE drug_short_name = "{1}"
+		AND side_effect IN {2}
 		GROUP BY side_effect
-		ORDER BY effect_proportion DESC
-		LIMIT 10'''.format(indication_single_term, drug_short_name)
+		ORDER BY effect_proportion DESC'''.format(indication_single_term, drug_short_name, side_effect_tuple)
 	result_df = pd.io.sql.frame_query(query_string, conn)
 	return result_df
 
 
-
-
-def get_side_effect_probs_for_multi_drug(indication_single_term, drug_tuple, conn):
+def get_side_effect_probs_for_multi_drug(indication_single_term, drug_tuple, side_effect_tuple, conn):
 	result_df = pd.DataFrame()
+	print side_effect_tuple
 	for drug_short_name in drug_tuple:
-		current_drug_effects = get_side_effect_probs_for_single_drug(indication_single_term, drug_short_name, conn)
+		current_drug_effects = get_side_effect_probs_for_single_drug(indication_single_term, 
+			drug_short_name, side_effect_tuple, conn)
 		result_df = result_df.append(current_drug_effects)
 	return result_df
 

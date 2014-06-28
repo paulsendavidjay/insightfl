@@ -21,6 +21,36 @@ margin: 0 auto;
 
 
 
+.jsontotable table, .jsontotable th, .jsontotable td {
+  border: 1px solid black;
+  margin: 10px;
+  text-align: center;
+  padding: 5px;
+}
+
+code {
+white-space: normal;
+}
+
+/*td{
+    border:1px solid #000;
+}
+
+tr td:last-child{
+    width:1%;
+    white-space:nowrap;
+}
+
+th{
+    border:1px solid #000;
+    width:1%;
+    white-space:nowrap;    
+}*/
+
+
+
+
+
 /* for d3 
 
 .bar {
