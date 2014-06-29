@@ -100,6 +100,50 @@ def RxFx_effect_fields(indication,indications):
 
 
 
+@app.route('/RxFx_effectiveness', methods=['GET','POST'])
+def RxFx_effectiveness():
+		# Renders RxFx.html.
+		indication = ''
+		
+		# GET LIST OF INDICATIONS
+		query_string = '''
+			SELECT indication, indication_single_term 
+			FROM top_indications'''
+		indication_list = pd.io.sql.frame_query(query_string, conn).sort('indication')
+		indications = list(indication_list['indication'])
+		indication_single_term = ""
+
+		if request.method=='GET':
+			return render_template('RxFx_effectiveness.html', 
+				indication="ANXIETY",
+				indications=indications,
+				indication_single_term=indication_single_term)
+		
+		elif request.method=='POST':
+			# HANDLE PROCESSING INFORMATION
+			indication = request.form['indication']
+			indication_single_term = str(indications_dict[indication])
+			file_name = "images/" + indication_single_term + ".jpg"
+			app.test_request_context()
+
+			print file_name
+			return render_template('RxFx_effectiveness.html', 
+				indication=indication,
+				indications=indications,
+				indication_single_term=indication_single_term)			
+
+		return render_template('RxFx_effectiveness.html', 
+			indication=indication,
+			indications=indications,
+			indication_single_term=indication_single_term)
+
+
+
+
+
+
+
+
 @app.route('/RxFx_recommendation', methods=['GET', 'POST'])
 def RxFx_recommendation():
 	# Returns recommdation list to j.query
@@ -180,107 +224,10 @@ def multi_effect_probs():
 
 
 
-
-
-
-
-
-
-
-
-# ROUTING/VIEW FUNCTIONS
-
-
-# @app.route('/single_effect_png/<data_string>', methods=['GET','POST'])
-# def single_effect_png(data_string):
-# 	'''Expects pandas data slice of side effects and drug name'''	
-# 	single_effect_plot_data = pd.read_json(data_string)
-# 	drug_name = str(single_effect_plot_data.columns.values[0])
-# 	single_effect_plot_data=single_effect_plot_data.sort(drug_name, ascending=False)
-	
-# 	print "SINGLE EFFECT PNG: single_effect_plot_data", drug_name
-# 	values = list(single_effect_plot_data.ix[:,0])
-# 	indices = [x.encode('UTF8') for x in list(single_effect_plot_data.index)] 
-# 	#print values, indices
-# 	fig=plt.figure();
-# 	#single_effect_plot_data.plot(kind='bar')
-# 	plt.bar(range(0,len(indices)), values, align='center', color='blue') # test plot
-# 	plt.axhline(0, color='k')
-# 	plt.ylabel('proportion of reported cases', fontsize=16)
-# 	plt.xticks(range(0,len(indices)), indices, rotation=45)
-# 	plt.title(drug_name, color='black', fontsize=20)
-# 	fig.autofmt_xdate(ha='right')
-	
-# 	img = StringIO()
-# 	fig.savefig(img)
-# 	img.seek(0)
-# 	return send_file(img, mimetype='image/png')
- 
-
-
-
-
-
-# @app.route('/drug_comparisons', methods=['GET', 'POST'])
-# def drug_comparisons():
-# 		#conn = get_db() 	# returns connection object
-# 		#c = conn.cursor() # create cursor object
-		
-# 		query_string = '''
-# 			SELECT indication, indication_single_term 
-# 			FROM top_indications'''
-# 		indication_list = pd.io.sql.frame_query(query_string, conn).sort("indication")
-# 		indications = list(indication_list['indication'])
-# 		indications_single_term = list(indication_list['indication_single_term'])
-# 		druglist=""
-# 		if request.method=='GET':
-# 			query_string = '''
-# 				SELECT drug_short_name
-# 				FROM drugs_by_indication_short
-# 				WHERE drugindication = "{0}"'''.format(indications[0])
-# 			druglist = list(pd.io.sql.frame_query(query_string, conn).sort("drug_short_name").ix[:,0])
-			
-# 			current_indication=indications[0]
-# 			drug_selection=[]
-		
-# 		elif request.method=='POST':
-# 			druglist=""
-# 			current_indication = request.form['indication']
-# 			query_string = '''
-# 			SELECT drug_short_name
-# 			FROM drugs_by_indication_short
-# 			WHERE drugindication = "{0}"'''.format(current_indication)
-# 			druglist = list(pd.io.sql.frame_query(query_string, conn).sort("drug_short_name").ix[:,0])
-			 
-# 			drug_selection = request.form.getlist('drugs_selected') 
-# 			drug_selection = [x.encode('UTF8') for x in drug_selection]
-			
-# 			#current_Rx_list = request.form['Rx']
-# 			#print current_Rx_list
-		
-# 		print drug_selection
-# 		return render_template('drug_comparisons.html',
-# 			indications = indications,
-# 			indications_single_term = indications_single_term,
-# 			druglist = druglist, 
-# 			current_indication = current_indication,
-# 			drug_selection = drug_selection
-# 			)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+@app.route('/static/images/<indication_single_term>.jpg', methods=['POST'])
+def effectiveness_png():
+	# DISPLAYS EFFECTIVENESS PROBABILITIES
+	return 
 
 
 
@@ -290,10 +237,10 @@ def about():
 		# Renders slides.html.
 		return render_template('slides.html')
 
-@app.route('/author')
+@app.route('/about')
 def contact():
 		# Renders author.html.
-		return render_template('author.html')
+		return render_template('about.html')
 
 
 
