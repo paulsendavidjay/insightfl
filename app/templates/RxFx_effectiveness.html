@@ -1,0 +1,45 @@
+{% extends "layout/base.html" %}
+
+
+{% block content %}
+
+
+<div class="container">
+    <!-- PAGE HEADER -->
+    <h1>RxFx</h1>
+	<p class="lead"> Prescription Drug Side Effects </p>
+	<h5>Get recommended Rx based on personalized tolerance/intolerance of side effects</h5>
+
+		<form method=post action="{{ url_for('RxFx_effectiveness') }}" >
+			<div class="container">
+
+				<!-- 	INDICATION DROPDOWN	ROW	 -->	
+				<div class="row">
+					<dt><p>Select a condition to compare drug effectiveness...</p></dt>
+					<select name="indication">
+
+						{% for i in range(0, (indications|length) ) %}
+							<option value="{{indications[i]}}" 
+								{% if indications[i] == indication %} selected {% endif %}
+								> "{{indications[i]}}" </option>			
+						{% endfor %}
+
+					</select>
+					<input type=submit value=Search style="background-color: #B2CCFF">
+				</div>	
+			</div>
+		</form>
+	</div>
+</div>
+{% if indication_single_term != "" %}
+<!-- SINGLE PLOT FIGURE --> 
+<center><img class="img-responsive img-rounded" 
+src="{{ url_for( 'effectiveness_png', indication_single_term = indication_single_term ) }}" height="80%" width="80%" /></center>
+{% endif %}
+
+{% endblock %}
+
+
+{% block footer %}
+  {% include "include/footer.html" %}
+{% endblock %}
