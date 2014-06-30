@@ -229,6 +229,10 @@ def effectiveness_png():
 	# DISPLAYS EFFECTIVENESS PROBABILITIES
 	return 
 
+@app.route('/static/images/_map.png', methods=['POST'])
+def map_png():
+	# DISPLAYS EFFECTIVENESS PROBABILITIES
+	return 
 
 
 

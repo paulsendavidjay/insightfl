@@ -41,11 +41,11 @@ WITH THE DRUG, THEN BY THE SUM OF PROBABILITIES ACROSS DRUGS.
 '''
 def first_n_effects(n, indication_single_term, conn):
 	query_string = '''
-		SELECT side_effect, COUNT(side_effect) AS tot_effect_count, SUM(side_effect_prob)/COUNT(side_effect_prob) AS mean_effect_proportion
+		SELECT side_effect, COUNT(side_effect) AS tot_effect_count, SUM(side_effect_prob) AS sum_effect_proportion
 		FROM {0}_props
 		WHERE side_effect NOT IN ("DRUG INEFFECTIVE", "COMPLETED SUICIDE", "DRUG INTERACTION", "DEPRESSION")
 		GROUP BY side_effect
-		ORDER BY mean_effect_proportion DESC
+		ORDER BY sum_effect_proportion DESC
 		LIMIT {1}'''.format(indication_single_term, n)
 	result_df = pd.io.sql.frame_query(query_string, conn)
 	result = list(result_df['side_effect'])
