@@ -224,7 +224,7 @@ def multi_effect_probs():
 
 
 
-@app.route('/static/images/<indication_single_term>.jpg', methods=['POST'])
+@app.route('/static/images/<indication_single_term>.png', methods=['POST'])
 def effectiveness_png():
 	# DISPLAYS EFFECTIVENESS PROBABILITIES
 	return 
