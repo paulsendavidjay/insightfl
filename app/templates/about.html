@@ -7,11 +7,38 @@
 <div class="container">
     <!-- PAGE HEADER -->
     <h1>RxFx</h1>
-	<p class="lead"> Prescription Drug Side Effects </p>
-				<!-- SINGLE PLOT FIGURE --> 
-				<right><img class="img-responsive img-rounded" 
-				src="{{ url_for('map_png') }}" height="50%" width="50%" /></right>
+	<p class="lead"> Prescription Drug Recommendations </p>
+
+	<div class="row">
+		<div class="col-xs-5 col-md-5 col-lg-5">
+		<h4>Data</h4>
+		</div>
 	</div>
+
+	<div class="row">
+		<div class="col-xs-7 col-md-7 col-lg-7">
+			<p>The data for RxFx come from <a href="https://open.fda.gov/">openFDA</a>, a repository of nearly 3 million adverse drug event reports since 2004.</p> 
+			<p>Record submissions come primarily from consumers, physicians, pharmacists, and other health care professionals.</p>
+		</div>
+		<div class="col-xs-5 col-md-5 col-lg-5">
+				<!-- SINGLE PLOT FIGURE --> 
+					<img class="img-responsive img-rounded" 
+					src="{{ url_for('map_png') }}" height="75%" width="75%" />
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-xs-12 col-md-12 col-lg-12">
+		<h4>Recommendations</h4>
+		<p>Prescription drugs are recommended based on the rank ordering of preferences. Individual weights are assigned to adverse effects by taking the inverse of their rank.</p>
+		<p>For example, if the ordering of side effects were 'Nausea' before 'Dizziness', thier rank orders would be '1' and '2', and thier respective weights would be '1/1' and '1/2'. This means that Dizziness would be considered one-half as important as Nausea as a side effect to be avoided.</p>
+		<p>Once weights are assigned to each side effect, they are multiplied against the probability of their occurence before being added together. Continuing with this example, suppose Drug A has a 0.5 probability of leading to Nausea, and a 0.2 probability of leading to Dizziness. The score for Drug A would then be (1/1 x 0.5) + (1/2 x 0.2) = 0.6. This is done for all of the drugs most commonly used to treat the specific condition, and the drug with the lowest score recieves the recommendation.</p>
+
+		</div>
+	</div>
+
+
+
 </div>
 
 
