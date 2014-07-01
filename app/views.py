@@ -81,18 +81,6 @@ def RxFx_effect_fields(indication,indications):
 		# GET TOP SIDE EFFECTS ASSOCIATED WITH DRUG
 		side_effect_names = first_n_effects(15, indications_dict[indication], conn)
 
-		prob_df = get_side_effect_probabilities(str(indication), tuple(side_effect_names), conn)
-		prob_table = pd.pivot_table(prob_df, 'effect_proportion', rows='side_effect', cols='drug_short_name')
-		prob_table = prob_table.fillna(0)
-		
-		dot_product = np.dot(pref_list, prob_table)
-		drug_short_names = list(prob_table.columns.values)
-		
-		score_df = pd.DataFrame(dot_product, index=drug_short_names, columns=['score'])
-		score_df=score_df.sort_index(by=['score'])
-		recommendation = score_df.iloc[0].name
-		alternates = score_df.index[1:4]
-		
 	return render_template('RxFx_effect_fields.html',
 		indication=indication,
 		indications=indications,
@@ -126,7 +114,6 @@ def RxFx_effectiveness():
 			file_name = "images/" + indication_single_term + ".jpg"
 			app.test_request_context()
 
-			print file_name
 			return render_template('RxFx_effectiveness.html', 
 				indication=indication,
 				indications=indications,
@@ -189,7 +176,9 @@ def multi_effect_probs():
 	drug_list = [x.encode('UTF8') for x in data_list_json["drugList"]]	
 	
 	# REMOVE RANKED ITEMS THAT DON'T APPEAR IN INDEX LIST
+	print str(drug_list)
 	prob_df = get_side_effect_probs_for_multi_drug(str(indications_dict[indication]), tuple(drug_list), tuple(ranked_side_effect_list), conn)
+	print str(prob_df)
 	ranked_side_effect_list_copy = list(ranked_side_effect_list)
 	indexSet = set(prob_df.loc[:]["side_effect"])
 	for i in ranked_side_effect_list_copy:

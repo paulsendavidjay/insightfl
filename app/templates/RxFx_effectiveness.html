@@ -20,7 +20,7 @@
 
 						{% for i in range(0, (indications|length) ) %}
 							<option value="{{indications[i]}}" 
-								{% if indications[i] == indication %} selected {% endif %}
+								{% if indications[i] == session['indication'] %} selected {% endif %}
 								> "{{indications[i]}}" </option>			
 						{% endfor %}
 
