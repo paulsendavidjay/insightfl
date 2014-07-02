@@ -18,8 +18,7 @@ app.secret_key = os.urandom(24)
 def get_db():
 	'''Open new connection to db'''
 	if not hasattr(g, 'mysql_db'):
-		g.mysql_db = con_db(host='127.0.0.1',
-			port=3306, user='root', db='RxFx', passwd='')
+		g.mysql_db = con_db(host, port, user, passwd, db)
 	return g.mysql_db
 
 @app.teardown_appcontext
