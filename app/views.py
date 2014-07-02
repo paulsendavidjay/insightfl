@@ -1,4 +1,4 @@
-from flask import render_template, request, Flask, make_response, session, send_file
+from flask import render_template, request, Flask, make_response, session, send_file, g
 from app import app, host, port, user, passwd, db
 from app.helpers.database import con_db
 from app.helpers.app_funcs import *
@@ -15,11 +15,18 @@ indications_dict = pickle.load( open( "app/helpers/indications_dict.p", "rb" ) )
 
 app.secret_key = os.urandom(24)
 
-conn = con_db(host=app.config["DATABASE_HOST"],
-			port=app.config["DATABASE_PORT"], 
-			user=app.config["DATABASE_USER"], 
-			db=app.config["DATABASE_DB"], 
-			passwd=app.config["DATABASE_PASSWORD"])
+def get_db():
+	'''Open new connection to db'''
+	if not hasattr(g, 'mysql_db'):
+		g.mysql_db = con_db(host='127.0.0.1',
+			port=3306, user='root', db='RxFx', passwd='')
+	return g.mysql_db
+
+@app.teardown_appcontext
+def close_db(error):
+		"""Closes the database again at the end of the request."""
+		if hasattr(g, 'mysql_db'):
+				g.mysql_db.close()
 
 
 @app.route('/testing', methods=['GET','POST'])
@@ -37,6 +44,8 @@ def testing():
 @app.route('/RxFx', methods=['GET','POST'])
 def RxFx():
 		# Renders RxFx.html.
+		conn = get_db() 	# returns connection object
+
 		indication = ''
 		
 		# GET LIST OF INDICATIONS
@@ -69,6 +78,8 @@ def RxFx():
 @app.route('/RxFx_effect_fields', methods=['GET', 'POST'])
 def RxFx_effect_fields(indication,indications):
 	# Renders RxFx_effect_fields.html.
+	conn = get_db() 	# returns connection object
+
 	if request.method=='GET':
 		
 		# GET TOP SIDE EFFECTS ASSOCIATED WITH INDICATION
@@ -93,6 +104,7 @@ def RxFx_effect_fields(indication,indications):
 @app.route('/RxFx_effectiveness', methods=['GET','POST'])
 def RxFx_effectiveness():
 		# Renders RxFx.html.
+		conn = get_db() 	# returns connection object
 		indication = ''
 		
 		# GET LIST OF INDICATIONS
@@ -136,6 +148,7 @@ def RxFx_effectiveness():
 @app.route('/RxFx_recommendation', methods=['GET', 'POST'])
 def RxFx_recommendation():
 	# Returns recommdation list to j.query
+	conn = get_db() 	# returns connection object
 	indication = urllib.unquote(request.args.get('indication'))
 	indication = indication.encode('UTF8')
 	try:
@@ -169,6 +182,7 @@ def RxFx_recommendation():
 @app.route('/multi_effect_probs', methods=['GET','POST'])
 def multi_effect_probs():
 	# Gets probabilities of side effects for different drugs
+	conn = get_db() 	# returns connection object
 	indication = urllib.unquote(request.args.get('indication'))
 	indication = indication.encode('UTF8')
 	data_list_json=request.json
