@@ -15,7 +15,7 @@
 
 				<!-- 	INDICATION DROPDOWN	ROW	 -->	
 				<div class="row">
-					<dt><p>Select a condition to compare drug effectiveness...</p></dt>
+					<dt><p>Select a condition to compare drug ineffectiveness...</p></dt>
 					<select name="indication">
 
 						{% for i in range(0, (indications|length) ) %}
@@ -33,7 +33,10 @@
 </div>
 {% if indication_single_term != "" %}
 <!-- SINGLE PLOT FIGURE --> 
-<center><img class="img-responsive img-rounded" 
+<center>
+	<p></p>
+	<p>(Drugs at the top of the list are the most effective)</p>
+	<img class="img-responsive img-rounded" 
 src="{{ url_for( 'effectiveness_png', indication_single_term = indication_single_term ) }}" height="50%" width="50%" /></center>
 {% endif %}
 
