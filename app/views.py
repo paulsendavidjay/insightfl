@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 from StringIO import StringIO
 import pickle 
 import os, pickle, ast, json, urllib, socket
+from time import gmtime, strftime
+
 
 indications_dict = pickle.load( open( "app/helpers/indications_dict.p", "rb" ) )
 
@@ -176,9 +178,8 @@ def multi_effect_probs():
 	drug_list = [x.encode('UTF8') for x in data_list_json["drugList"]]	
 	
 	# REMOVE RANKED ITEMS THAT DON'T APPEAR IN INDEX LIST
-	print str(drug_list)
+
 	prob_df = get_side_effect_probs_for_multi_drug(str(indications_dict[indication]), tuple(drug_list), tuple(ranked_side_effect_list), conn)
-	print str(prob_df)
 	ranked_side_effect_list_copy = list(ranked_side_effect_list)
 	indexSet = set(prob_df.loc[:]["side_effect"])
 	for i in ranked_side_effect_list_copy:
