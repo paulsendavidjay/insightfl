@@ -9,4 +9,4 @@ node_modules
 .idea/
 nbproject/
 >>>>>>> 7a5590defc606c6ca6a55e5caed28ba051e5f065
-app/settings/*.cfg
+#app/settings/*.cfg
