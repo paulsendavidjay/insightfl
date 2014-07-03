@@ -160,13 +160,18 @@ def RxFx_recommendation():
 		prob_df = get_side_effect_probabilities(str(indications_dict[indication]), tuple(ranked_side_effect_list), conn)
 		prob_table = pd.pivot_table(prob_df, 'effect_proportion', rows='side_effect', cols='drug_short_name')
 		prob_table = prob_table.fillna(0)
+
+		# MAKE DICTIONARY WITH SIDE EFFECT AS KEY, WEIGHTS AS VALUE
+		side_rank_dict = dict(zip(ranked_side_effect_list, ranks))
+		sorted_ranks = [side_rank_dict[x] for x in list(prob_table.index)] # order ranks as they apper in prob_table
 		
 		# GET SUM OF WEIGHTS X PROBABILITIES
-		dot_product = np.dot(ranks, prob_table)
+		dot_product = np.dot(sorted_ranks, prob_table)
 		drug_short_names = list(prob_table.columns.values)
 
 		score_df = pd.DataFrame(dot_product, index=drug_short_names, columns=['score'])
 		score_df=score_df.sort_index(by=['score'])
+		print str(score_df)
 		recommendations = list(score_df.index)
 		rec_json = json.dumps(recommendations)
 	except:
