@@ -171,7 +171,6 @@ def RxFx_recommendation():
 
 		score_df = pd.DataFrame(dot_product, index=drug_short_names, columns=['score'])
 		score_df=score_df.sort_index(by=['score'])
-		print str(score_df)
 		recommendations = list(score_df.index)
 		rec_json = json.dumps(recommendations)
 	except:
