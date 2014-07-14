@@ -238,10 +238,18 @@ def effectiveness_png():
 
 @app.route('/static/images/_map.png', methods=['POST'])
 def map_png():
-	# DISPLAYS EFFECTIVENESS PROBABILITIES
+	# DISPLAYS CONTRIBUTION MAP
 	return 
 
+@app.route('/use_duration', methods=['GET'])
+def use_duration():
+	# DISPLAYS USE DURATION IMAGE
+	return render_template('use_duration.html')
 
+@app.route('/static/images/use_duration.png', methods=['POST'])
+def use_duration_png():
+	# DISPLAYS CONTRIBUTION MAP
+	return 
 
 @app.route('/slides')
 def about():
